@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Market Analysis | SmartPrice Insights</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* =========== Global Styles & Variables =========== */
+        :root {
+            --dark-blue-start: #1a2b3c;
+            --dark-blue-end: #2c3e50;
+            --orange-primary: #FF5F38;
+            --orange-hover: #e04b2a;
+            --white: #fff;
+            --light-gray-bg: #f8f9fa; /* Very light gray for cards */
+            --text-dark: #1a2b3c;      /* For text inside light cards */
+            --text-light: #fff;       /* For headings/text on dark bg */
+            --text-secondary: #6c757d; /* Secondary text inside light cards */
+            --text-placeholder: #aaa;
+            --text-light-secondary: #e0e0e0; /* Dimmer white text on dark bg */
+            --border-light: #eee;           /* Border color for inside cards */
+            --dark-border-light: rgba(255, 255, 255, 0.15); /* Light border for on dark bg */
+            --placeholder-bg: #e9ecef;       /* Placeholder bg inside cards */
+            --dark-placeholder-bg: rgba(0, 0, 0, 0.1); /* Darker placeholder bg if needed */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            line-height: 1.7;
+            /* Dark blue gradient background is primary */
+            background: linear-gradient(-45deg, var(--dark-blue-start) 0%, var(--dark-blue-end) 100%);
+            color: var(--text-light-secondary); /* Default text is light */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            padding-top: 50px; /* More space above content */
+            padding-bottom: 50px; /* More space below content */
+        }
+
+        /* Link styling */
+        a {
+            text-decoration: none;
+            color: var(--orange-primary);
+            transition: color 0.3s ease;
+        }
+        a:hover {
+             color: var(--orange-hover);
+        }
+
+        /* Main Content Container - No background, just width/centering */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px; /* Horizontal padding only */
+            opacity: 0;
+            animation: fadeInContainer 0.8s 0.2s ease-out forwards;
+        }
+
+        @keyframes fadeInContainer {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Headings - Now on dark background */
+        h1, h2, h3 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        h1 span {
+            color: var(--orange-primary);
+        }
+
+        /* Intro Text - Now on dark background */
+        .intro {
+            text-align: center;
+            color: var(--text-light-secondary);
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.1rem;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* Analysis Section */
+        .analysis-section {
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--dark-border-light);
+            opacity: 0;
+            animation: slideUpFadeIn 0.6s ease-out forwards;
+        }
+        .analysis-section:nth-of-type(1) { animation-delay: 0.5s; }
+        .analysis-section:nth-of-type(2) { animation-delay: 0.7s; }
+
+        .analysis-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        @keyframes slideUpFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Titles (h2) - On dark background */
+        .analysis-section h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 35px;
+            border-bottom: 3px solid var(--orange-primary);
+            padding-bottom: 10px;
+            display: inline-block;
+            color: var(--text-light);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+        }
+
+        /* Content Item (Card) - Light background on dark page */
+        .content-item {
+            background-color: var(--light-gray-bg);
+            color: var(--text-dark);
+            padding: 30px 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out, border-color 0.3s ease-in-out;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: slideUpFadeIn 0.5s ease-out forwards;
+            animation-delay: inherit;
+        }
+
+        .content-item:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Content Item Title (h3) - Dark text inside card */
+        .content-item h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+             margin-top: 0;
+        }
+
+        /* Chart Placeholder - Inside light card */
+        .chart-placeholder {
+            min-height: 280px; /* Keep minimum height */
+            background-color: var(--placeholder-bg); /* Background for the container */
+            display: flex; /* Use flex to center image */
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            padding: 10px; /* Padding around the image */
+            flex-grow: 1;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light); /* Light border around placeholder area */
+        }
+
+        /* Text Analysis Box - Inside light card */
+        .text-analysis {
+            min-height: 280px;
+            background-color: var(--white);
+            padding: 20px; /* Adjusted padding */
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+        .text-analysis i {
+             font-size: 2.5rem;
+             color: var(--orange-primary);
+             margin-bottom: 15px;
+        }
+
+        /* Style for placeholder images */
+        .chart-placeholder img, .text-analysis img {
+            max-width: 100%; /* Ensure image is responsive */
+            height: auto; /* Maintain aspect ratio */
+            max-height: 260px; /* Limit height within placeholder */
+            display: block; /* Remove extra space below image */
+            margin: 0 auto; /* Center image */
+            border-radius: 4px; /* Slightly rounded corners for image */
+        }
+
+        /* Content Description - Inside light card */
+        .content-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 400;
+             margin-top: auto; /* Pushes description to bottom */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+                animation: none;
+                opacity: 1;
+            }
+             .analysis-section, .content-item {
+                 animation: none;
+                 opacity: 1;
+             }
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            h1 { font-size: 2.2rem; }
+            .analysis-section h2 { font-size: 1.8rem; }
+            .intro { font-size: 1rem; margin-bottom: 40px; }
+        }
+        @media (max-width: 480px) {
+             .container { padding: 0 10px; }
+             h1 { font-size: 1.9rem; }
+             .analysis-section h2 { font-size: 1.5rem; }
+             .content-item { padding: 25px 20px; }
+             .content-item h3 { font-size: 1.3rem; }
+             .chart-placeholder, .text-analysis { min-height: 240px; }
+              .chart-placeholder img, .text-analysis img {
+                    max-height: 220px; /* Adjust max height for smaller screens */
+              }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <h1>Market Analysis <span>& Insights</span></h1>
+        <p class="intro">
+            Explore key trends, location-based insights, and property characteristics analysis derived from our comprehensive real estate data for India. Understand the factors influencing market values.
+        </p>
+
+        <section class="analysis-section">
+            <h2>Market & Location Overview</h2>
+            <div class="content-grid">
+                <div class="content-item">
+                    <h3>Average Sales Price Trend (INR)</h3>
+                    <div class="chart-placeholder">
+                        <img src="static/videos/bangalore_price_trend.png" alt="Average Sales Price Trend Chart">
+                    </div>
+                    <p class="content-description">Shows the monthly trend of average property sales prices in key Indian cities.</p>
+                </div>
+                <div class="content-item">
+                    <h3>City/Neighborhood Price Comparison</h3>
+                    <div class="chart-placeholder">
+                        <img src="static/videos/bangalore_price_per_sqft_by_type.png" alt="City or Neighborhood Price Comparison Map or Chart">
+                    </div>
+                    <p class="content-description">Compares average sales prices or price per square foot across different cities or localities.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="analysis-section">
+             <h2>Property Insights</h2>
+             <div class="content-grid">
+                <div class="content-item">
+                    <h3>Price per Square Foot Analysis</h3>
+                    <div class="chart-placeholder">
+                        <img src="static/videos/bangalore_neighborhood_price_comparison.png" alt="Price per Square Foot Analysis Chart">
+                    </div>
+                    <p class="content-description">Shows how price per square foot varies based on property type (e.g., 2BHK, 3BHK) or location.</p>
+                </div>
+                <div class="content-item">
+                    <h3>Key Price Drivers</h3>
+                    <div class="text-analysis">
+                         <i class="fas fa-map-marker-alt"></i>
+                         <img src="static/videos/WhatsApp Image 2025-04-17 at 00.11.39_c33a2f12.jpg" alt="Key Price Drivers Infographic" style="margin-top: 10px;">
+                         </div>
+                    <p class="content-description">Highlights the relationship between location advantages, property features, and final sale price.</p>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        console.log("Market Analysis page script loaded.");
+        // General animations or other JS can remain.
+        document.addEventListener('DOMContentLoaded', () => {
+           const container = document.querySelector('.container');
+            if (container) {
+                container.addEventListener('animationend', () => {
+                    console.log("Container fade-in animation complete.");
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangalore Property Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        /* General Reset and Body Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2b3c, #2c3e50);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1a2b3c;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #FF5F38;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #fff;
+        }
+
+        /* Layout Styles */
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .left-panel {
+            flex: 0 0 350px;
+        }
+
+        .right-panel {
+            flex: 1;
+            min-width: 350px;
+        }
+
+        /* Panel Base Styles */
+        .panel {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Map Panel Styles */
+        .map-panel {
+            height: 550px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid #1a2b3c;
+        }
+
+        .map-panel.expanded {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100vh;
+            width: 100vw;
+            z-index: 1000;
+            margin: 0;
+            border-radius: 0;
+            padding: 20px;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 1001;
+            display: flex;
+            gap: 10px;
+        }
+
+        .map-control-btn {
+            background-color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #1a2b3c;
+            transition: all 0.2s;
+        }
+
+        .map-control-btn:hover {
+            background-color: #f1f1f1;
+            transform: scale(1.1);
+        }
+
+        #propertyMap {
+            height: calc(100% - 50px);
+            width: 100%;
+            border-radius: 4px;
+        }
+
+        .society-container {
+            height: 950px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #1a2b3c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Filter Styles */
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a2b3c;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: #f0f0f0;
+        }
+
+        input::placeholder {
+            color: #aaaaaa;
+        }
+
+        .range-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .range-inputs input {
+            flex: 1;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 15px;
+        }
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            background-color: #FF5F38;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #e04b2a;
+        }
+
+        .btn-reset {
+            background-color: #e0e0e0;
+            color: #1a2b3c;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-reset:hover {
+            background-color: #bdbdbd;
+        }
+
+        .btn-small {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            width: auto;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-small:hover {
+            background-color: #5f6a6b;
+        }
+
+        /* Society List Item Styles */
+        .society-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .society-item:hover {
+            background-color: #f8f9fa;
+        }
+        .society-item:last-child {
+            border-bottom: none;
+        }
+
+        .society-item.selected {
+            background-color: #e3f2fd;
+            border-left: 4px solid #FF5F38;
+            padding-left: 11px;
+        }
+
+        .society-info {
+            flex: 1;
+            padding-right: 15px;
+            overflow: hidden;
+        }
+
+        .society-name {
+            font-weight: 600;
+            color: #1a2b3c;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .society-location {
+            font-size: 0.9rem;
+            color: #666666;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .society-price {
+            font-weight: 600;
+            color: #27ae60;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            padding-left: 10px;
+        }
+
+        .amenity-tag {
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 2px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .society-amenities {
+             margin-top: 8px;
+             line-height: 1.4;
+        }
+
+        /* Hover Popup Styles */
+        .society-popup {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            z-index: 11;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #eee;
+            border-top: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            pointer-events: none;
+            margin: 0 1px;
+        }
+
+        .society-item:hover .society-popup {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Popup Content Styles */
+        .popup-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .gallery-image-container {
+             text-align: center;
+             flex-basis: calc(20% - 20px);
+             min-width: 60px;
+        }
+
+        .gallery-image-container img {
+             width: 100%;
+             height: 170px;
+             object-fit: cover;
+             border-radius: 4px;
+             border: 1px solid #eee;
+             display: block;
+             margin: 0 auto 3px auto;
+        }
+
+        .gallery-image-container span {
+            font-size: 0.7rem;
+            color: #555;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .popup-details {
+            margin: 15px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .detail-row span:first-child {
+            font-weight: 600;
+            color: #1a2b3c;
+            padding-right: 10px;
+            flex-shrink: 0;
+        }
+        .detail-row span:last-child {
+            text-align: right;
+            color: #555;
+        }
+
+        .popup-contact {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .popup-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+         .popup-contact-item i {
+             color: #FF5F38;
+             width: 16px;
+             text-align: center;
+         }
+
+        /* Loading, Empty, Error States */
+        .empty-state, .loading-message, .error-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+        }
+        .loading-message {
+            z-index: 5;
+        }
+        .empty-state i, .loading-message i, .error-message i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+         .error-message i {
+             color: #c62828;
+         }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF5F38;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #e57373;
+            z-index: 5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Favorites Panel Styles */
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 1.2rem;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            transition: all 0.3s;
+            z-index: 5;
+        }
+
+        .favorite-btn.favorited {
+            color: #ff4757;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.2);
+            color: #ff4757;
+        }
+
+        .favorites-panel {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 80px;
+            background: white;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-height: 350px;
+            overflow: hidden;
+            width: 320px;
+            border: 1px solid #ddd;
+        }
+        .favorites-panel.visible {
+            display: block;
+        }
+
+        .favorites-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            background-color: #f8f9fa;
+        }
+        .favorites-header h3 {
+             margin: 0;
+             font-size: 1.1rem;
+             color: #1a2b3c;
+             display: flex;
+             align-items: center;
+             gap: 8px;
+        }
+        .favorites-header button {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 5px;
+            line-height: 1;
+        }
+        .favorites-header button:hover {
+            color: #333;
+        }
+
+        #favoritesList {
+            padding: 10px 15px;
+            max-height: calc(350px - 50px);
+            overflow-y: auto;
+        }
+
+        .favorite-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+         .favorite-item:last-child {
+            border-bottom: none;
+         }
+        .favorite-item span {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .favorite-item .favorite-btn {
+             position: static;
+             font-size: 1rem;
+             padding: 0 5px;
+             flex-shrink: 0;
+        }
+
+        .show-favorites-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #FF5F38;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .show-favorites-btn:hover {
+             background-color: #e04b2a;
+             transform: scale(1.1);
+        }
+        .show-favorites-btn.panel-visible {
+            background-color: #c0392b;
+        }
+
+        /* Map Popup Styles */
+        .map-popup h4 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            color: #1a2b3c;
+        }
+        .map-popup p {
+            margin: 3px 0;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        .map-popup a {
+            color: #FF5F38;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .map-popup a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1000px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .left-panel {
+                flex: 1 1 auto;
+                order: 1;
+            }
+            .right-panel {
+                flex: 1 1 auto;
+                min-width: unset;
+                order: 2;
+            }
+            .panel {
+                height: auto !important;
+            }
+            .society-container {
+                height: 60vh;
+                min-height: 400px;
+            }
+            #propertyMap {
+                height: 400px;
+            }
+            .society-popup {
+                left: 5px;
+                right: 5px;
+                width: auto;
+                max-width: calc(100vw - 30px);
+                top: 100%;
+                transform: none;
+             }
+        }
+
+         @media (max-width: 768px) {
+             .header h1 { font-size: 1.8rem; }
+             .header p { font-size: 1rem; }
+             .favorites-panel {
+                 width: calc(100% - 40px);
+                 max-width: 400px;
+                 bottom: 15px;
+                 right: 15px;
+                 left: 15px;
+                 max-height: 40vh;
+             }
+             #favoritesList {
+                 max-height: calc(40vh - 50px);
+             }
+             .show-favorites-btn {
+                 bottom: 15px;
+                 right: 15px;
+             }
+             .gallery-image-container {
+                 flex-basis: calc(33.33% - 10px);
+             }
+         }
+         @media (max-width: 480px) {
+             .left-panel { flex-basis: auto; }
+             .filter-group { margin-bottom: 15px; }
+             .btn { padding: 10px 15px; font-size: 0.95rem; }
+             .society-item { padding: 10px; }
+             .society-name { font-size: 1rem; }
+             .society-location { font-size: 0.85rem; }
+             .society-price { font-size: 1rem; }
+             .gallery-image-container {
+                 flex-basis: calc(50% - 10px);
+             }
+             .favorites-panel { width: calc(100% - 20px); left: 10px; right: 10px; bottom: 10px; }
+             .show-favorites-btn { bottom: 10px; right: 10px; width: 45px; height: 45px; font-size: 1.1rem; }
+             .society-popup { left: 2px; right: 2px; }
+             .range-inputs {
+                 flex-direction: column;
+                 gap: 10px;
+             }
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-home"></i> Bangalore Property Explorer</h1>
+            <p>Discover properties with comprehensive details</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel filter-panel">
+                    <h2 class="section-title"><i class="fas fa-filter"></i> Filter Properties</h2>
+
+                    <div class="filter-group">
+                        <label for="uiLocation">Location</label>
+                        <select id="uiLocation">
+                            <option value="">All Locations</option>
+                            </select>
+                        <button id="selectAllLocationsBtn" class="btn-small" title="Select 'All Locations'">
+                           <i class="fas fa-globe-asia"></i> All Locations
+                        </button>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="uiAreaType">Area Type</label>
+                        <select id="uiAreaType">
+                            <option value="">All Types</option>
+                             </select>
+                        <button id="selectAllAreaTypesBtn" class="btn-small" title="Select 'All Types'">
+                           <i class="fas fa-th-large"></i> All Types
+                        </button>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>BHK Configuration</label>
+                        <div class="radio-group" id="uiBHK">
+                            <label class="radio-option">
+                                <input type="radio" name="filterBHK" value="any" checked> All
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterBHK" value="1"> 1 BHK
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterBHK" value="2"> 2 BHK
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterBHK" value="3"> 3 BHK
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="filterBHK" value="4"> 4+ BHK
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="minArea">Area Range (sq.ft)</label>
+                        <div class="range-inputs">
+                            <div>
+                                <label for="minArea">Min</label>
+                                <input type="number" id="minArea" placeholder="Min area" min="0">
+                            </div>
+                            <div>
+                                <label for="maxArea">Max</label>
+                                <input type="number" id="maxArea" placeholder="Max area" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="minPrice">Price Range (Rs.)</label>
+                        <div class="range-inputs">
+                            <div>
+                                <label for="minPrice">Min</label>
+                                <input type="number" id="minPrice" placeholder="Min Price" min="0">
+                            </div>
+                            <div>
+                                <label for="maxPrice">Max</label>
+                                <input type="number" id="maxPrice" placeholder="Max price" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Amenities</label>
+                        <div class="checkbox-group" id="uiAmenities">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="uiAmenities" value="Park"> Park
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="uiAmenities" value="Gym"> Gym
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="uiAmenities" value="Pool"> Pool
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="uiAmenities" value="Security"> Security
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="uiAmenities" value="Clubhouse"> Clubhouse
+                            </label>
+                             <label class="checkbox-option">
+                                <input type="checkbox" name="uiAmenities" value="Lift"> Lift
+                            </label>
+                        </div>
+                    </div>
+
+                    <button id="applyFiltersBtn" class="btn">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                    <button id="resetFiltersBtn" class="btn-reset">
+                         <i class="fas fa-undo"></i> Reset All Filters
+                    </button>
+                </div>
+
+                <div class="panel map-panel" id="mapPanel">
+                    <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> Location Map</h2>
+                    <div class="map-controls">
+                        <button class="map-control-btn" id="zoomInBtn" title="Zoom In"><i class="fas fa-plus"></i></button>
+                        <button class="map-control-btn" id="zoomOutBtn" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                        <button class="map-control-btn" id="fitMarkersBtn" title="Fit to Markers"><i class="fas fa-expand"></i></button>
+                        <button class="map-control-btn" id="closeMapBtn" title="Close Fullscreen" style="display: none;"><i class="fas fa-compress"></i></button>
+                    </div>
+                    <div id="propertyMap">
+                        <div class="loading-message"> <p>Loading map...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="panel society-panel">
+                    <h2 class="section-title"><i class="fas fa-building"></i> Property Listings</h2>
+                    <div class="society-container" id="societyContainer">
+                         <div id="loadingSocieties" class="loading-message hidden">
+                            <div class="loading-spinner"></div>
+                            <p>Loading properties...</p>
+                         </div>
+                          <div id="errorContainer" class="error-message hidden">
+                             </div>
+                         <div class="empty-state"> <i class="fas fa-filter"></i>
+                            <p>Apply filters or wait for properties to load</p>
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </div> </div> <div class="favorites-panel" id="favoritesPanel">
+        <div class="favorites-header">
+            <h3><i class="fas fa-heart"></i> Your Favorites</h3>
+            <button id="closeFavoritesBtn" title="Close Favorites Panel"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="favoritesList">
+             <p style="padding: 10px; text-align: center; color: #777;">No favorites added yet.</p>
+        </div>
+    </div>
+
+    <button class="show-favorites-btn" id="showFavoritesBtn" title="Show Favorites">
+        <i class="fas fa-heart"></i>
+    </button>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000';
+
+        // Image Categories Definition
+        const imageCategories = {
+            hall: Array.from({ length: 20 }, (_, i) => `static/images/hall/hall_${String(i + 1).padStart(2, '0')}.jpg`),
+            bathroom: Array.from({ length: 20 }, (_, i) => `static/images/bathroom/bathroom_${String(i + 1).padStart(2, '0')}.jpg`),
+            bed: Array.from({ length: 20 }, (_, i) => `static/images/bed/bed_${String(i + 1).padStart(2, '0')}.jpg`),
+            kitchen: Array.from({ length: 20 }, (_, i) => `static/images/kitchen/kitchen_${String(i + 1).padStart(2, '0')}.jpg`),
+            balcony: Array.from({ length: 20 }, (_, i) => `static/images/balcony/balcony_${String(i + 1).padStart(2, '0')}.jpg`)
+        };
+        const FALLBACK_IMAGE_SRC = 'static/images/hall/hall_01.jpg';
+
+        // Random Indian Data Generators
+        function generateRandomIndianPhone() {
+            const prefixes = ['7', '8', '9'];
+            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            const rest = Math.floor(100000000 + Math.random() * 900000000).toString().substring(1);
+            return `+91 ${prefix}${rest.substring(0, 4)} ${rest.substring(4)}`;
+        }
+
+        function generateRandomIndianEmail(name) {
+            const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'rediffmail.com'];
+            const namePart = name.toLowerCase().replace(/\s+/g, '');
+            const randomNum = Math.floor(Math.random() * 100);
+            const domain = domains[Math.floor(Math.random() * domains.length)];
+            return `${namePart}${randomNum}@${domain}`;
+        }
+
+        function generateRandomIndianBuilderName() {
+            const firstNames = ['Raj', 'Amit', 'Rahul', 'Vijay', 'Sanjay', 'Arun', 'Deepak', 'Sunil', 'Nitin', 'Prakash'];
+            const lastNames = ['Builders', 'Developers', 'Construction', 'Properties', 'Homes', 'Estates', 'Projects'];
+            const companies = ['Infrastructure', 'Developers', 'Constructions', 'Buildtech', 'Hometech'];
+            
+            const format = Math.random() > 0.5 ? 1 : 2;
+            
+            if (format === 1) {
+                return `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+            } else {
+                return `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${companies[Math.floor(Math.random() * companies.length)]}`;
+            }
+        }
+
+        function generateContactInfo(society) {
+            const builderName = society.builder || generateRandomIndianBuilderName();
+            const phone = society.contactPhone || generateRandomIndianPhone();
+            const email = society.contactEmail || generateRandomIndianEmail(builderName);
+            
+            return `
+                <div class="popup-contact-item">
+                    <i class="fas fa-phone"></i> <span>${phone}</span>
+                </div>
+                <div class="popup-contact-item">
+                    <i class="fas fa-envelope"></i> <span>${email}</span>
+                </div>
+                <div class="popup-contact-item">
+                    <i class="fas fa-building"></i> <span>Builder: ${builderName}</span>
+                </div>
+            `;
+        }
+
+        // DOM Element References
+        const elements = {
+            locationSelect: document.getElementById('uiLocation'),
+            areaTypeSelect: document.getElementById('uiAreaType'),
+            bhkContainer: document.getElementById('uiBHK'),
+            amenitiesContainer: document.getElementById('uiAmenities'),
+            minAreaInput: document.getElementById('minArea'),
+            maxAreaInput: document.getElementById('maxArea'),
+            minPriceInput: document.getElementById('minPrice'),
+            maxPriceInput: document.getElementById('maxPrice'),
+            societyContainer: document.getElementById('societyContainer'),
+            loadingElement: document.getElementById('loadingSocieties'),
+            applyFiltersBtn: document.getElementById('applyFiltersBtn'),
+            resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+            propertyMapContainer: document.getElementById('propertyMap'),
+            errorContainer: document.getElementById('errorContainer'),
+            favoritesPanel: document.getElementById('favoritesPanel'),
+            favoritesList: document.getElementById('favoritesList'),
+            showFavoritesBtn: document.getElementById('showFavoritesBtn'),
+            closeFavoritesBtn: document.getElementById('closeFavoritesBtn'),
+            selectAllLocationsBtn: document.getElementById('selectAllLocationsBtn'),
+            selectAllAreaTypesBtn: document.getElementById('selectAllAreaTypesBtn'),
+            mapPanel: document.getElementById('mapPanel'),
+            zoomInBtn: document.getElementById('zoomInBtn'),
+            zoomOutBtn: document.getElementById('zoomOutBtn'),
+            fitMarkersBtn: document.getElementById('fitMarkersBtn'),
+            closeMapBtn: document.getElementById('closeMapBtn')
+        };
+
+        // Application State
+        let state = {
+            allSocieties: [],
+            allLocations: [],
+            allAreaTypes: [],
+            map: null,
+            markers: [],
+            hoverTimeout: null,
+            favorites: JSON.parse(localStorage.getItem('propertyFavorites')) || [],
+            isMapExpanded: false
+        };
+
+        // --- Helper Functions ---
+        function getRandomPropertyImages() {
+            const selectedImages = {};
+            for (const category in imageCategories) {
+                if (Object.hasOwnProperty.call(imageCategories, category)) {
+                    const imagesInCategory = imageCategories[category];
+                    if (imagesInCategory && imagesInCategory.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * imagesInCategory.length);
+                        selectedImages[category] = imagesInCategory[randomIndex];
+                    } else {
+                        console.warn(`Image category "${category}" is empty or invalid.`);
+                        selectedImages[category] = FALLBACK_IMAGE_SRC;
+                    }
+                }
+            }
+            return selectedImages;
+        }
+
+        function getRandomBangaloreCoordinates() {
+            const BANGALORE_BOUNDS = { north: 13.15, south: 12.75, west: 77.40, east: 77.80 };
+            return {
+                lat: BANGALORE_BOUNDS.south + Math.random() * (BANGALORE_BOUNDS.north - BANGALORE_BOUNDS.south),
+                lng: BANGALORE_BOUNDS.west + Math.random() * (BANGALORE_BOUNDS.east - BANGALORE_BOUNDS.west)
+            };
+        }
+
+        // --- Favorite Management ---
+        function toggleFavorite(societyId) {
+            const index = state.favorites.indexOf(societyId);
+            if (index === -1) {
+                state.favorites.push(societyId);
+            } else {
+                state.favorites.splice(index, 1);
+            }
+            localStorage.setItem('propertyFavorites', JSON.stringify(state.favorites));
+            updateFavoriteButtonsUI();
+            renderFavoritesList();
+        }
+
+        function updateFavoriteButtonsUI() {
+            document.querySelectorAll('.society-item .favorite-btn').forEach(btn => {
+                const societyId = btn.dataset.societyId;
+                const isFavorited = state.favorites.includes(societyId);
+                btn.classList.toggle('favorited', isFavorited);
+                btn.title = isFavorited ? 'Remove from Favorites' : 'Add to Favorites';
+            });
+        }
+
+        function renderFavoritesList() {
+            const favoriteSocieties = state.allSocieties.filter(society =>
+                state.favorites.includes(society.id)
+            );
+
+            if (favoriteSocieties.length === 0) {
+                elements.favoritesList.innerHTML = '<p style="padding: 10px; text-align: center; color: #777;">No favorites added yet.</p>';
+            } else {
+                elements.favoritesList.innerHTML = favoriteSocieties.map(society => `
+                    <div class="favorite-item">
+                        <span>${society.name} (${society.location})</span>
+                        <button class="favorite-btn favorited" data-society-id="${society.id}" title="Remove from Favorites">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                `).join('');
+
+                elements.favoritesList.querySelectorAll('.favorite-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleFavorite(btn.dataset.societyId);
+                    });
+                });
+            }
+        }
+
+        // --- UI Rendering ---
+        function createSocietyItem(society) {
+            const item = document.createElement('div');
+            item.className = 'society-item';
+            item.dataset.id = society.id;
+
+            const randomImages = getRandomPropertyImages();
+            const galleryHTML = Object.entries(randomImages).map(([category, imgPath]) => `
+                <div class="gallery-image-container">
+                    <img src="${imgPath}"
+                         alt="${society.name} - ${category}"
+                         onerror="this.onerror=null; this.src='${FALLBACK_IMAGE_SRC}';"
+                         loading="lazy">
+                    <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                </div>
+            `).join('');
+
+            const isFavorited = state.favorites.includes(society.id);
+
+            item.innerHTML = `
+                <button class="favorite-btn ${isFavorited ? 'favorited' : ''}"
+                        data-society-id="${society.id}" title="${isFavorited ? 'Remove from Favorites' : 'Add to Favorites'}">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <div class="society-info">
+                    <div class="society-name" title="${society.name}">${society.name}</div>
+                    <div class="society-location" title="${society.location}">${society.location}</div>
+                    <div class="society-amenities">
+                        ${(society.amenities || []).slice(0, 4).map(amenity =>
+                            `<span class="amenity-tag">${amenity}</span>`
+                        ).join('')}
+                        ${(society.amenities || []).length > 4 ? '<span class="amenity-tag">...</span>' : ''}
+                    </div>
+                </div>
+                <div class="society-price">₹${society.base_price || 'N/A'}L</div>
+
+                <div class="society-popup">
+                    <div class="popup-gallery">${galleryHTML}</div>
+                    <div class="popup-details">
+                        <div class="detail-row"><span>Area Type:</span><span>${society.area_type || 'N/A'}</span></div>
+                        <div class="detail-row"><span>BHK Available:</span><span>${(society.bhk_available && society.bhk_available.length > 0) ? society.bhk_available.join(', ') : 'N/A'}</span></div>
+                        <div class="detail-row"><span>Area Range:</span><span>${society.min_area || 'N/A'} - ${society.max_area || 'N/A'} sq.ft</span></div>
+                        <div class="detail-row"><span>Status:</span><span>${society.status || 'Available'}</span></div>
+                    </div>
+                    <div class="popup-contact">${generateContactInfo(society)}</div>
+                </div>
+            `;
+
+            item.querySelector('.favorite-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(society.id);
+            });
+
+            setupSocietyItemInteractions(item, society);
+            return item;
+        }
+
+        function setupSocietyItemInteractions(item, society) {
+            let hoverTimer = null;
+            const popup = item.querySelector('.society-popup');
+
+            item.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimer);
+                hoverTimer = setTimeout(() => {
+                    if (popup) {
+                        popup.style.opacity = '1';
+                        popup.style.visibility = 'visible';
+                    }
+                }, 300);
+            });
+
+            item.addEventListener('mouseleave', () => {
+                clearTimeout(hoverTimer);
+                if (popup) {
+                    setTimeout(() => {
+                        if (!item.matches(':hover') && !popup.matches(':hover')) {
+                            popup.style.opacity = '0';
+                            popup.style.visibility = 'hidden';
+                        }
+                    }, 100);
+                }
+            });
+
+            if (popup) {
+                popup.addEventListener('mouseenter', () => {
+                     clearTimeout(hoverTimer);
+                });
+                popup.addEventListener('mouseleave', () => {
+                    setTimeout(() => {
+                        if (!item.matches(':hover') && !popup.matches(':hover')) {
+                            popup.style.opacity = '0';
+                            popup.style.visibility = 'hidden';
+                        }
+                    }, 100);
+                });
+            }
+
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.society-item.selected').forEach(el => el.classList.remove('selected'));
+                item.classList.add('selected');
+
+                const marker = state.markers.find(m => m.options.title === society.name && m.getLatLng().lat.toFixed(5) === society.lat.toFixed(5));
+                if (marker && state.map) {
+                    state.map.flyTo(marker.getLatLng(), 16, { duration: 0.5 });
+                    marker.openPopup();
+                }
+                 setTimeout(() => item.classList.remove('selected'), 1500);
+            });
+        }
+
+        // --- Data Loading and Filtering ---
+        async function fetchData(endpoint) {
+            hideError();
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    let errorMsg = `Server error! Status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.message || errorData.error || errorMsg;
+                    } catch (e) { }
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                if (data && typeof data === 'object') {
+                     if (data.status && data.status !== 'success' && data.message) {
+                         throw new Error(data.message);
+                     }
+                     return data.societies || data.locations || data.area_types || data.data || data;
+                }
+                 return data;
+
+            } catch (error) {
+                console.error(`API call failed for ${endpoint}:`, error);
+                showError(`Failed to load data (${endpoint}). ${error.message}`);
+                throw error;
+            }
+        }
+
+        async function loadInitialData() {
+            showLoading("Loading initial data...");
+            try {
+                const [locationsData, areaTypesData] = await Promise.all([
+                    fetchData('/api/locations').catch(err => { showError("Failed to load locations."); return []; }),
+                    fetchData('/api/area_types').catch(err => { showError("Failed to load area types."); return []; })
+                ]);
+
+                state.allLocations = Array.isArray(locationsData) ? ['', ...new Set(locationsData)].sort() : [''];
+                state.allAreaTypes = Array.isArray(areaTypesData) ? ['', ...new Set(areaTypesData)].sort() : [''];
+
+                populateSelect(elements.locationSelect, state.allLocations, "All Locations");
+                populateSelect(elements.areaTypeSelect, state.allAreaTypes, "All Area Types");
+
+                showLoading("Loading all properties...");
+                const societiesData = await fetchData('/api/societies?location=').catch(err => { showError("Failed to load properties."); return []; });
+
+                if (Array.isArray(societiesData)) {
+                    state.allSocieties = societiesData.map((society, index) => {
+                        const coords = getRandomBangaloreCoordinates();
+                        const builderName = generateRandomIndianBuilderName();
+                        return {
+                            id: society.id || `gen_id_${index}`,
+                            name: society.name || 'Unnamed Property',
+                            location: society.location || 'Unknown Location',
+                            area_type: society.area_type || 'N/A',
+                            bhk_available: Array.isArray(society.bhk_available) ? society.bhk_available : [],
+                            amenities: Array.isArray(society.amenities) ? society.amenities : [],
+                            base_price: society.base_price || 0,
+                            min_area: society.min_area || 0,
+                            max_area: society.max_area || 0,
+                            min_price: society.min_price || 0,
+                            max_price: society.max_price || 0,
+                            lat: coords.lat,
+                            lng: coords.lng,
+                            status: society.status || 'Available',
+                            contactPhone: generateRandomIndianPhone(),
+                            contactEmail: generateRandomIndianEmail(builderName),
+                            builder: builderName
+                        };
+                    });
+                } else {
+                    state.allSocieties = [];
+                    showError("Received invalid property data format from server.");
+                }
+
+                renderSocieties();
+                updateMapMarkers();
+                renderFavoritesList();
+
+            } catch (error) {
+                console.error("Error during initial data load:", error);
+                elements.societyContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Could not load initial property data. Please try refreshing.</p></div>';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function populateSelect(selectElement, options, defaultOptionText = "Select an option") {
+            selectElement.innerHTML = '';
+            options.forEach(optionValue => {
+                const option = document.createElement('option');
+                option.value = optionValue;
+                option.textContent = optionValue === '' ? defaultOptionText : optionValue;
+                selectElement.appendChild(option);
+            });
+        }
+
+        function getCurrentFilters() {
+            const selectedBHK = elements.bhkContainer.querySelector('input[name="filterBHK"]:checked')?.value || 'any';
+            const selectedAmenities = Array.from(elements.amenitiesContainer.querySelectorAll('input[name="uiAmenities"]:checked')).map(cb => cb.value);
+            const minArea = elements.minAreaInput.value ? parseInt(elements.minAreaInput.value) : null;
+            const maxArea = elements.maxAreaInput.value ? parseInt(elements.maxAreaInput.value) : null;
+            const minPrice = elements.minPriceInput.value ? parseInt(elements.minPriceInput.value) : null;
+            const maxPrice = elements.maxPriceInput.value ? parseInt(elements.maxPriceInput.value) : null;
+
+            let bhkFilterValue = selectedBHK;
+            let minBhk = null;
+            if (selectedBHK === '4') {
+                bhkFilterValue = 'any';
+                minBhk = 4;
+            }
+
+            return {
+                location: elements.locationSelect.value,
+                areaType: elements.areaTypeSelect.value,
+                bhk: bhkFilterValue,
+                minBhk: minBhk,
+                amenities: selectedAmenities,
+                minArea: minArea,
+                maxArea: maxArea,
+                minPrice: minPrice,
+                maxPrice: maxPrice
+            };
+        }
+
+        function filterSocieties(filters) {
+            if (!Array.isArray(state.allSocieties)) return [];
+
+            return state.allSocieties.filter(society => {
+                // Location filter
+                if (filters.location && society.location !== filters.location) return false;
+                // Area type filter
+                if (filters.areaType && society.area_type !== filters.areaType) return false;
+
+                // BHK filter
+                const bhkValue = parseInt(filters.bhk, 10);
+                const societyBhks = Array.isArray(society.bhk_available) ? society.bhk_available : [];
+
+                if (filters.bhk !== 'any' && !societyBhks.includes(bhkValue)) {
+                     return false;
+                }
+                 if (filters.minBhk !== null) {
+                     const hasMinBhk = societyBhks.some(b => b >= filters.minBhk);
+                     if (!hasMinBhk) return false;
+                 }
+
+                // Area range filter
+                if (filters.minArea !== null && society.max_area < filters.minArea) return false;
+                if (filters.maxArea !== null && society.min_area > filters.maxArea) return false;
+
+                 // Area range filter
+                 if (filters.minPrice !== null && society.max_price < filters.minPrice) return false;
+                if (filters.maxPrice !== null && society.min_price > filters.maxPrice) return false;
+
+                // Amenities filter
+                if (filters.amenities.length > 0) {
+                    const societyAmenities = Array.isArray(society.amenities) ? society.amenities : [];
+                    if (!filters.amenities.every(a => societyAmenities.includes(a))) return false;
+                }
+
+                return true;
+            });
+        }
+
+        function renderSocieties() {
+            hideError();
+            showLoading("Applying filters...");
+            const filters = getCurrentFilters();
+            const filteredSocieties = filterSocieties(filters);
+
+            elements.societyContainer.innerHTML = '';
+
+            if (filteredSocieties.length === 0) {
+                elements.societyContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search-minus"></i>
+                        <p>No properties match your current filters.</p>
+                        <button class="btn-reset" id="resetFiltersEmptyStateBtn">Reset Filters</button>
+                    </div>
+                `;
+                document.getElementById('resetFiltersEmptyStateBtn')?.addEventListener('click', resetFiltersAndApply);
+            } else {
+                const fragment = document.createDocumentFragment();
+                filteredSocieties.forEach(society => {
+                    fragment.appendChild(createSocietyItem(society));
+                });
+                elements.societyContainer.appendChild(fragment);
+                updateFavoriteButtonsUI();
+            }
+            updateMapMarkers(filteredSocieties);
+            hideLoading();
+        }
+
+        function resetFilters() {
+             elements.locationSelect.value = '';
+             elements.areaTypeSelect.value = '';
+             elements.bhkContainer.querySelector('input[name="filterBHK"][value="any"]').checked = true;
+             elements.amenitiesContainer.querySelectorAll('input[name="uiAmenities"]:checked').forEach(cb => cb.checked = false);
+             elements.minAreaInput.value = '';
+             elements.maxAreaInput.value = '';
+             elements.minPriceInput.value = '';
+             elements.maxPriceInput.value = '';
+             hideError();
+        }
+
+        function resetFiltersAndApply() {
+             resetFilters();
+             renderSocieties();
+         }
+
+        // --- Map Handling ---
+        async function initMap() {
+            try {
+                const bangaloreCenter = [12.9716, 77.5946];
+                state.map = L.map(elements.propertyMapContainer, {
+                    zoomControl: false
+                }).setView(bangaloreCenter, 11);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 18,
+                    minZoom: 10
+                }).addTo(state.map);
+
+                // Add click handler to expand map
+                state.map.on('click', () => {
+                    toggleMapExpansion();
+                });
+
+                const mapLoadingMsg = elements.propertyMapContainer.querySelector('.loading-message');
+                if (mapLoadingMsg) mapLoadingMsg.remove();
+
+            } catch (error) {
+                 console.error("Map initialization failed:", error);
+                 showError("Could not initialize the map.");
+                 elements.propertyMapContainer.innerHTML = '<p style="text-align:center; padding:20px; color: red;">Map failed to load.</p>';
+            }
+        }
+
+        function updateMapMarkers(societiesToDisplay = state.allSocieties) {
+            if (!state.map) return;
+
+            state.markers.forEach(marker => state.map.removeLayer(marker));
+            state.markers = [];
+
+            if (!Array.isArray(societiesToDisplay)) return;
+
+            societiesToDisplay.forEach(society => {
+                if (typeof society.lat !== 'number' || typeof society.lng !== 'number' || isNaN(society.lat) || isNaN(society.lng)) {
+                    console.warn(`Invalid or missing coordinates for society: ${society.name} (ID: ${society.id})`);
+                    return;
+                }
+
+                const marker = L.marker([society.lat, society.lng], {
+                    title: society.name
+                })
+                .addTo(state.map)
+                .bindPopup(`
+                    <div class="map-popup">
+                        <h4>${society.name}</h4>
+                        <p>${society.location}</p>
+                        <p><b>₹${society.base_price || 'N/A'}L</b> onwards</p>
+                        <p>${(society.bhk_available || []).join(', ')} BHK</p>
+                        <p>Area: ${society.min_area || 'N/A'} - ${society.max_area || 'N/A'} sq.ft</p>
+                        
+                        <p>Price: ${society.min_price || 'N/A'} - ${society.max_price || 'N/A'} sq.ft</p>
+                        <p><i class="fas fa-phone"></i> ${society.contactPhone || 'N/A'}</p>
+                        <p><i class="fas fa-building"></i> ${society.builder || 'N/A'}</p>
+                        <a href="#" onclick="focusSocietyItem('${society.id}'); return false;">View Details</a>
+                    </div>
+                `, { minWidth: 200 });
+
+                state.markers.push(marker);
+            });
+
+            if (state.markers.length > 0) {
+                const markerGroup = new L.featureGroup(state.markers);
+                try {
+                    state.map.flyToBounds(markerGroup.getBounds().pad(0.15), { maxZoom: 16, duration: 0.5 });
+                } catch (e) {
+                    console.warn("Could not fit map bounds.", e);
+                    if (state.markers.length === 1) {
+                        state.map.flyTo(state.markers[0].getLatLng(), 16, { duration: 0.5 });
+                    } else {
+                         state.map.flyTo([12.9716, 77.5946], 11, { duration: 0.5 });
+                    }
+                }
+            } else if (state.allSocieties.length > 0 && societiesToDisplay.length === 0) {
+                  state.map.flyTo([12.9716, 77.5946], 11, { duration: 0.5 });
+            }
+        }
+
+        function focusSocietyItem(societyId) {
+            const item = document.querySelector(`.society-item[data-id='${societyId}']`);
+            if (item) {
+                state.map.closePopup();
+                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.querySelectorAll('.society-item.selected').forEach(el => el.classList.remove('selected'));
+                item.classList.add('selected');
+                setTimeout(() => item.classList.remove('selected'), 2000);
+            } else {
+                console.warn(`Society item with ID ${societyId} not found in the current list.`);
+            }
+        }
+
+        function toggleMapExpansion() {
+            state.isMapExpanded = !state.isMapExpanded;
+            elements.mapPanel.classList.toggle('expanded', state.isMapExpanded);
+            elements.closeMapBtn.style.display = state.isMapExpanded ? 'flex' : 'none';
+            
+            if (state.isMapExpanded && state.markers.length > 0) {
+                const markerGroup = new L.featureGroup(state.markers);
+                state.map.flyToBounds(markerGroup.getBounds().pad(0.15), { maxZoom: 16, duration: 0.5 });
+            } else if (!state.isMapExpanded) {
+                state.map.flyTo([12.9716, 77.5946], 11, { duration: 0.5 });
+            }
+            
+            setTimeout(() => {
+                state.map.invalidateSize();
+            }, 300);
+        }
+
+        function setupMapControls() {
+            // Zoom in button
+            elements.zoomInBtn.addEventListener('click', () => {
+                state.map.zoomIn();
+            });
+            
+            // Zoom out button
+            elements.zoomOutBtn.addEventListener('click', () => {
+                state.map.zoomOut();
+            });
+            
+            // Fit markers button
+            elements.fitMarkersBtn.addEventListener('click', () => {
+                if (state.markers.length > 0) {
+                    const markerGroup = new L.featureGroup(state.markers);
+                    state.map.flyToBounds(markerGroup.getBounds().pad(0.15), { maxZoom: 16, duration: 0.5 });
+                }
+            });
+            
+            // Close fullscreen button
+            elements.closeMapBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMapExpansion();
+            });
+        }
+
+        // --- Error Handling & Loading Indicators ---
+        function showError(message) {
+            if (elements.errorContainer) {
+                elements.errorContainer.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                elements.errorContainer.classList.remove('hidden');
+                 elements.errorContainer.style.position = 'sticky';
+                 elements.errorContainer.style.top = '0';
+                 elements.errorContainer.style.zIndex = '6';
+            }
+            hideLoading();
+        }
+
+        function hideError() {
+            if (elements.errorContainer) {
+                elements.errorContainer.classList.add('hidden');
+                elements.errorContainer.innerHTML = '';
+                 elements.errorContainer.style.position = 'absolute';
+            }
+        }
+
+        function showLoading(message = "Loading...") {
+             if (elements.loadingElement) {
+                 elements.loadingElement.querySelector('p').textContent = message;
+                 elements.loadingElement.classList.remove('hidden');
+             }
+         }
+
+         function hideLoading() {
+             if (elements.loadingElement) {
+                 elements.loadingElement.classList.add('hidden');
+             }
+         }
+
+        async function testBackendConnection() {
+            showLoading("Connecting to server...");
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/locations`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!response.ok) {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+                console.log("Backend connection successful.");
+                hideError();
+                return true;
+            } catch (error) {
+                showError(`Cannot connect to the backend server at ${API_BASE_URL}. Please ensure it's running. ${error.message}`);
+                console.error("Backend connection failed:", error);
+                elements.societyContainer.innerHTML = '<div class="error-message" style="position: sticky; top:0; z-index: 6;"><i class="fas fa-plug"></i>Cannot connect to server. Backend might be offline.</div>';
+                hideLoading();
+                return false;
+            }
+        }
+
+        // --- Event Listeners Setup ---
+        function setupEventListeners() {
+            elements.applyFiltersBtn.addEventListener('click', renderSocieties);
+            elements.resetFiltersBtn.addEventListener('click', resetFiltersAndApply);
+            elements.selectAllLocationsBtn.addEventListener('click', () => {
+                elements.locationSelect.value = '';
+                renderSocieties();
+            });
+            elements.selectAllAreaTypesBtn.addEventListener('click', () => {
+                elements.areaTypeSelect.value = '';
+                renderSocieties();
+            });
+
+            elements.showFavoritesBtn.addEventListener('click', () => {
+                const isVisible = elements.favoritesPanel.classList.toggle('visible');
+                elements.showFavoritesBtn.title = isVisible ? 'Hide Favorites' : 'Show Favorites';
+                elements.showFavoritesBtn.classList.toggle('panel-visible', isVisible);
+            });
+
+            elements.closeFavoritesBtn.addEventListener('click', () => {
+                elements.favoritesPanel.classList.remove('visible');
+                elements.showFavoritesBtn.title = 'Show Favorites';
+                elements.showFavoritesBtn.classList.remove('panel-visible');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!elements.favoritesPanel.contains(event.target) && !elements.showFavoritesBtn.contains(event.target)) {
+                    if (elements.favoritesPanel.classList.contains('visible')) {
+                        elements.favoritesPanel.classList.remove('visible');
+                        elements.showFavoritesBtn.title = 'Show Favorites';
+                        elements.showFavoritesBtn.classList.remove('panel-visible');
+                    }
+                }
+            });
+
+             elements.bhkContainer.addEventListener('change', () => {
+                 renderSocieties();
+             });
+        }
+
+        // --- Application Initialization ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log("DOM fully loaded and parsed. Initializing application...");
+            try {
+                if (!await testBackendConnection()) {
+                    console.warn("Initialization halted: Backend connection failed.");
+                    return;
+                }
+
+                await initMap();
+                setupMapControls();
+                await loadInitialData();
+                setupEventListeners();
+                renderFavoritesList();
+
+                console.log("Application initialized successfully.");
+
+            } catch (error) {
+                console.error("Critical initialization error:", error);
+                 if (elements.errorContainer.classList.contains('hidden')) {
+                    showError("Application failed to initialize completely. Please refresh the page.");
+                 }
+            } finally {
+                 hideLoading();
+            }
+        });
+
+        // Expose focusSocietyItem to global scope for map popup links
+        window.focusSocietyItem = focusSocietyItem;
+    </script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartPrice Insights | Real Estate Price Prediction</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* =========== Global Styles & Variables =========== */
+        :root {
+            --dark-blue-start: #1a2b3c;
+            --dark-blue-end: #2c3e50;
+            --orange-primary: #FF5F38;
+            --orange-hover: #e04b2a;
+            --white: #fff;
+            --light-gray-bg: #f0f0f0;
+            --text-dark: #1a2b3c;
+            --text-light: #fff;
+            --text-secondary: #666;
+            --text-placeholder: #aaa;
+            --text-light-secondary: #eee; /* Slightly dimmer white */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth; /* For smooth scrolling on anchor links */
+        }
+
+        body,
+        input,
+        button {
+            font-family: "Poppins", sans-serif;
+        }
+
+        /* Link reset */
+        a {
+            text-decoration: none;
+            color: inherit; /* Inherit text color by default */
+        }
+
+        /* Global Container */
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Basic Button Styling */
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px; /* Pill shape */
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--orange-primary);
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background-color: var(--orange-hover);
+            transform: translateY(-2px); /* Slight lift */
+        }
+
+        /* =========== Header Styling =========== */
+        .main-header {
+            background-color: var(--dark-blue-start);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .main-header .page-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .logo span { /* Orange accent */
+            color: var(--orange-primary);
+        }
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+        .main-nav a {
+            color: var(--text-light-secondary);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .main-nav a:hover,
+        .main-nav a.active {
+            color: var(--orange-primary);
+        }
+        /* Removed .nav-cta styles */
+
+        /* =========== Hero Section Styling =========== */
+        .hero-section {
+            background: linear-gradient(-45deg, var(--dark-blue-start) 0%, var(--dark-blue-end) 100%);
+            color: var(--white);
+            padding: 100px 0 120px 0;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-content h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .hero-content h1 span { /* Orange accent in title */
+            color: var(--orange-primary);
+        }
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--text-light-secondary);
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-content .btn { /* Larger button for hero */
+            font-size: 1.1rem;
+            padding: 15px 35px;
+        }
+
+        /* =========== Features Section Styling =========== */
+        .feature-card a.feature-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            height: 100%;
+        }
+
+        .feature-card a.feature-card-link .feature-icon i {
+            color: var(--orange-primary);
+        }
+
+        .feature-card a.feature-card-link .feature-title {
+            color: var(--text-dark);
+        }
+
+        .feature-card a.feature-card-link .feature-description {
+            color: var(--text-secondary);
+        }
+        .features {
+            padding: 80px 20px;
+            background-color: var(--white);
+            color: var(--text-dark);
+        }
+        .features .page-container {
+            text-align: center;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        .section-subtitle {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        .features-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: stretch;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .feature-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            padding: 35px 30px;
+            text-align: center;
+            border-radius: 10px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            background-color: var(--white);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        .feature-icon {
+            margin-bottom: 25px;
+        }
+        .feature-icon i {
+            font-size: 3rem;
+            color: var(--orange-primary);
+        }
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        .feature-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        /* Removed .feature-btn styles as button is removed */
+
+        /* =========== Footer Styling =========== */
+        .main-footer {
+            background-color: var(--dark-blue-end);
+            color: var(--text-light-secondary);
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 0;
+        }
+        .main-footer p {
+            font-size: 0.9rem;
+        }
+        .main-footer a {
+            color: var(--orange-primary);
+            text-decoration: underline;
+        }
+        .main-footer a:hover {
+            color: var(--orange-hover);
+        }
+
+        /* =========== Responsive Adjustments =========== */
+
+        @media (max-width: 991px) {
+            /* Features Section Responsive */
+            .features-container { justify-content: center; }
+            .feature-card { flex-basis: calc(50% - 30px); max-width: calc(50% - 30px); }
+            .section-title { font-size: 2.2rem; }
+            /* Header Responsive */
+            .main-nav ul { gap: 15px;}
+            /* Removed .nav-cta styles */
+        }
+
+        @media (max-width: 767px) {
+            .main-nav { display: none; } /* Hide desktop nav */
+            .logo { font-size: 1.6rem; }
+            .hero-content h1 { font-size: 2.2rem; }
+        }
+
+        @media (max-width: 570px) {
+            .hero-content h1 { font-size: 2rem; }
+            .hero-content p { font-size: 1rem; }
+            .section-title { font-size: 1.8rem; }
+            .section-subtitle { font-size: 1rem; }
+            .feature-card { flex-basis: 100%; max-width: 90%; }
+        }
+
+        /* Custom styles for contact info and image */
+        .main-footer {
+            position: relative; /* Make footer a positioning context */
+            padding-bottom: 130px; /* Reduced padding-bottom */
+        }
+
+        .contact-strip {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 130px; /* Reduced height */
+            background: var(--dark-blue-end);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5vw;
+            box-sizing: border-box;
+            color: var(--text-light-secondary);
+        }
+
+        .contact-info {
+            font-size: 1.1vw;
+            line-height: 1.4; /* Reduced line height for tighter spacing */
+            color: #b0bec5; /* Changed color to a lighter shade */
+        }
+
+        .contact-info strong {
+            font-size: 1.3vw;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--orange-primary);
+        }
+
+        .contact-info a{
+            color: #b0bec5; /* changed the color of the links */
+        }
+
+        .contact-info a:hover{
+            color: var(--orange-primary);
+        }
+
+        .footer-image {
+            height: 50%;
+            width: auto;
+            position: absolute;
+            right: 7vw;
+            bottom: 1;
+            transform: translateY(-15%);
+            border-radius: 15px 15px 0 0;
+            z-index: 2;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="page-container">
+            <a href="#" class="logo">Smart<span>Price</span></a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#features-section">Features</a></li>
+                    {% if 'username' in session %}
+                        <li><a href="/dashboard">Hi {{ session['username'] }}</a></li>
+                        <li><a href="/logout" class="btn btn-primary" style="padding: 4px 13px; margin-left: 10px;">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="page-container">
+            <div class="hero-content">
+                <h1>Intelligent Real Estate <span>Pricing</span> & Insights</h1>
+                <p>Leverage AI-powered predictions and market analysis to make smarter property decisions. Accurate, fast, and reliable.</p>
+                <a href="#features-section" class="btn btn-primary">Explore Features</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features-section" class="features">
+        <div class="page-container">
+
+            <h2 class="section-title">Unlock Powerful Insights & Opportunities</h2>
+            <p class="section-subtitle">Leverage data-driven tools to navigate the real estate market with confidence.</p>
+
+            <div class="features-container">
+
+                <div class="feature-card">
+                    <a href="/predict" class="feature-card-link">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Residential Market Insights</h3>
+                    <p class="feature-description">
+                        Precise Residential Price Forecasts You Can Trust. Understand future value based on historical data and predictive analytics.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <a href="/analytics" class="feature-card-link">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Community Market Analysis</h3>
+                        <p class="feature-description">
+                            Discover Key Market Trends in Your Area. Analyze neighborhood statistics, school ratings, and local amenities impacting value.
+                        </p>
+                    </a>
+                </div>
+
+                <div class="feature-card">
+                    <a href="/buysell" class="feature-card-link">
+                        <div class="feature-icon">
+                            <i class="fas fa-store-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Your Property Marketplace</h3>
+                        <p class="feature-description">
+                            List, Buy, or Sell Properties with Ease. Connect with potential buyers or sellers directly through our integrated platform.
+                        </p>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="page-container">
+            <div class="contact-strip">
+                <div class="contact-info">
+                    <strong>Contact Info</strong>
+                    <div class="contact-item">📧 <a href="mailto:202301040075@mitaoe.ac.in">202301040075@mitaoe.ac.in</a></div>
+                    <div class="contact-item">📞 <a href="https://api.whatsapp.com/send?phone=917276337332">+91-7276337332</a>, <a href="https://api.whatsapp.com/send?phone=917498491953">+91-7498491953</a></div>
+                    <div class="contact-item">📍 <a href="https://maps.app.goo.gl/KcXEhUCwHbN98KDW6">MIT Academy of Engineering, Alandi road,<br>Pune - 412 105, Maharashtra (India)</a></div>
+                </div>
+            </div>
+            <img src="static/videos/Screenshot 2025-04-14 160523-Photoroom.jpg" alt="Team Image" class="footer-image">
+        </div>
+    </footer>
+
+
+    <script>
+        // JavaScript related to the removed authentication section has been deleted.
+        // Add any other necessary JavaScript for the remaining page elements here.
+        console.log("Landing page script loaded.");
+    </script>
+
+</body>
+</html>

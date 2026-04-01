@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bangalore Home Price Prediction</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='house.png') }}" />
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+        @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css);
+
+        :root {
+            --dark-blue: #1a2b3c;
+            --dark-blue-light: #2c3e50;
+            --orange: #FF5F38;
+            --orange-dark: #e04b2a;
+            --text-dark: #1a2b3c;
+            --text-light: #ffffff;
+            --text-gray: #666666;
+            --input-bg: #f0f0f0;
+            --placeholder: #aaaaaa;
+            --card-bg: #ffffff;
+        }
+
+        body, html {
+            height: 130%;
+            font-family: "Roboto", sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--dark-blue), var(--dark-blue-light));
+            color: var(--text-dark);
+        }
+
+        .img {
+            background: url('https://images.livemint.com/img/2020/04/23/600x338/PTI22-04-2020_000146A_1587626568563_1587626584785.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            filter: blur(5px);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--orange);
+        }
+
+        .header p {
+            font-size: 16px;
+            color: var(--text-gray);
+        }
+
+        .form-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .form {
+            flex: 2;
+        }
+
+        .info-panel {
+            flex: 1;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--orange);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .area, .location, select, input[type="number"], input[type="text"] {
+            font-family: "Roboto", sans-serif;
+            outline: 0;
+            background: var(--input-bg);
+            width: 100%;
+            border: 1px solid #ddd;
+            margin: 0 0 15px;
+            padding: 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            height: 40px;
+            border-radius: 5px;
+            transition: border 0.3s;
+        }
+
+        input::placeholder {
+            color: var(--placeholder);
+        }
+
+        .area:focus, .location:focus, select:focus, input[type="number"]:focus {
+            border-color: var(--orange);
+        }
+
+        .switch-field {
+            display: flex;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .switch-field input {
+            position: absolute !important;
+            clip: rect(0, 0, 0, 0);
+            height: 1px;
+            width: 1px;
+            border: 0;
+            overflow: hidden;
+        }
+
+        .switch-field label {
+            background-color: #e4e4e4;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+            line-height: 1;
+            text-align: center;
+            padding: 10px 16px;
+            margin-right: -1px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease-in-out;
+            flex: 1;
+        }
+
+        .switch-field label:hover {
+            cursor: pointer;
+            background-color: #d5d5d5;
+        }
+
+        .switch-field input:checked + label {
+            background-color: var(--orange);
+            box-shadow: none;
+            color: white;
+        }
+
+        .switch-field label:first-of-type {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .switch-field label:last-of-type {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            background: var(--input-bg);
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-group label:hover {
+            background: #e0e0e0;
+        }
+
+        .submit {
+            background: var(--orange);
+            width: 100%;
+            border: 0;
+            margin: 20px 0 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 16px;
+            height: 45px;
+            text-align: center;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit:hover {
+            background: var(--orange-dark);
+        }
+
+        .result {
+            background: var(--input-bg);
+            width: 100%;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            box-sizing: border-box;
+            font-size: 16px;
+            height: 55px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .insight-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .insight-card i {
+            color: var(--orange);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .insight-card p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        .info-panel h3 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .adjustment-note {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-top: -15px;
+            font-style: italic;
+        }
+
+        #uiEstimatedPrice h2 {
+            margin: 10px 0;
+        }
+
+        #uiEstimatedPrice h2:first-child {
+            color: var(--text-dark);
+        }
+
+        #uiEstimatedPrice h2:last-child {
+            color: var(--orange);
+            font-weight: bold;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                width: 90%;
+                margin: 20px auto;
+                padding: 20px;
+            }
+            
+            .form-container {
+                flex-direction: column;
+            }
+            
+            .info-panel {
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .switch-field {
+                flex-wrap: wrap;
+            }
+            
+            .switch-field label {
+                flex: 1 0 40%;
+                margin-bottom: 5px;
+                border-radius: 5px !important;
+            }
+            
+            .checkbox-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="img"></div>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-home"></i> Bangalore Property Value Estimator</h1>
+            <p>Get an instant price estimate for properties in Bangalore</p>
+        </div>
+        
+        <div class="form-container">
+            <form class="form">
+                <div class="form-section">
+                    <h2><i class="fas fa-ruler-combined"></i> Property Details</h2>
+                    <div class="input-group">
+                        <label for="uiSqft">Area (Square Feet)</label>
+                        <input type="text" id="uiSqft" name="Squareft" value="1000" placeholder="Enter area in sqft" />
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>BHK</label>
+                        <div class="switch-field">
+                            <input type="radio" id="radio-bhk-1" name="uiBHK" value="1" />
+                            <label for="radio-bhk-1">1</label>
+                            <input type="radio" id="radio-bhk-2" name="uiBHK" value="2" checked />
+                            <label for="radio-bhk-2">2</label>
+                            <input type="radio" id="radio-bhk-3" name="uiBHK" value="3" />
+                            <label for="radio-bhk-3">3</label>
+                            <input type="radio" id="radio-bhk-4" name="uiBHK" value="4" />
+                            <label for="radio-bhk-4">4</label>
+                            <input type="radio" id="radio-bhk-5" name="uiBHK" value="5" />
+                            <label for="radio-bhk-5">5</label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Bath</label>
+                        <div class="switch-field">
+                            <input type="radio" id="radio-bath-1" name="uiBathrooms" value="1" />
+                            <label for="radio-bath-1">1</label>
+                            <input type="radio" id="radio-bath-2" name="uiBathrooms" value="2" checked />
+                            <label for="radio-bath-2">2</label>
+                            <input type="radio" id="radio-bath-3" name="uiBathrooms" value="3" />
+                            <label for="radio-bath-3">3</label>
+                            <input type="radio" id="radio-bath-4" name="uiBathrooms" value="4" />
+                            <label for="radio-bath-4">4</label>
+                            <input type="radio" id="radio-bath-5" name="uiBathrooms" value="5" />
+                            <label for="radio-bath-5">5</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2><i class="fas fa-map-marker-alt"></i> Location Details</h2>
+                    <div class="input-group">
+                        <label for="uiLocations">Location</label>
+                        <select class="location" id="uiLocations">
+                            <option value="" disabled="disabled" selected="selected">Choose a Location</option>
+                            <!-- Options will be loaded dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="uiPropertyType">Property Type</label>
+                        <select id="uiPropertyType">
+                            <option value="Apartment" selected>Apartment</option>
+                            <option value="Independent House">Independent House</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Farmhouse">Farmhouse</option>
+                            <option value="Commercial">Commercial</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2><i class="fas fa-building"></i> Additional Features</h2>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="uiAmenities" value="Park"> Parking
+                        </label>
+                        <label>
+                            <input type="checkbox" name="uiAmenities" value="Gym"> Gym
+                        </label>
+                        <label>
+                            <input type="checkbox" name="uiAmenities" value="Pool"> Swimming Pool
+                        </label>
+                        <label>
+                            <input type="checkbox" name="uiAmenities" value="Security"> 24/7 Security
+                        </label>
+                        <label>
+                            <input type="checkbox" name="uiAmenities" value="Lift"> Lift
+                        </label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="uiFloor">Floor Number</label>
+                        <input type="number" id="uiFloor" min="0" max="50" value="1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="uiAge">Property Age (years)</label>
+                        <input type="number" id="uiAge" min="0" max="50" value="5">
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <button class="submit" onclick="onClickedEstimatePrice(event)" type="button">
+                        <i class="fas fa-calculator"></i> Estimate Price
+                    </button>
+                    <div id="uiEstimatedPrice" class="result">
+                        <h2></h2>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="info-panel">
+                <h3><i class="fas fa-info-circle"></i> Bangalore Real Estate Insights</h3>
+                <div class="insight-card">
+                    <i class="fas fa-chart-line"></i>
+                    <p>Average price per sqft: ₹5,500 - ₹12,000 depending on location</p>
+                </div>
+                <div class="insight-card">
+                    <i class="fas fa-trophy"></i>
+                    <p>Most popular areas: Whitefield, Koramangala, Indira Nagar</p>
+                </div>
+                <div class="insight-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>Tip: Properties near metro stations command 10-15% premium</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add this at the top of your script section
+        function getCSRFToken() {
+            return document.cookie.split('; ').find(row => row.startsWith('csrf_token='))?.split('=')[1];
+        }
+    
+        // Modify your onClickedEstimatePrice function:
+        function onClickedEstimatePrice(event) {
+            event.preventDefault();
+            console.log("Estimate price button clicked");
+            
+            // Collect form data
+            const formData = {
+                total_sqft: parseFloat(document.getElementById("uiSqft").value),
+                location: document.getElementById("uiLocations").value,
+                bhk: parseInt(document.querySelector('input[name="uiBHK"]:checked').value),
+                bath: parseInt(document.querySelector('input[name="uiBathrooms"]:checked').value),
+                area_type: document.getElementById("uiPropertyType").value,
+                floor: parseInt(document.getElementById("uiFloor").value),
+                age: parseInt(document.getElementById("uiAge").value),
+                amenities: Array.from(document.querySelectorAll('input[name="uiAmenities"]:checked')).map(cb => cb.value)
+            };
+    
+            // Validate inputs
+            if (!formData.total_sqft || isNaN(formData.total_sqft)) {
+                alert("Please enter a valid area in square feet");
+                return;
+            }
+            
+            if (!formData.location) {
+                alert("Please select a location");
+                return;
+            }
+    
+            console.log("Sending data to server:", formData);
+    
+            // Show loading state
+            const resultDiv = document.getElementById("uiEstimatedPrice");
+            resultDiv.innerHTML = '<h2><i class="fas fa-spinner"></i> Calculating...</h2>';
+    
+            // Make API request with CSRF token
+            fetch("/api/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("API Response:", data);
+                if(data.status === 'success') {
+                    const price = data.data.adjusted_price;
+                    const formattedPrice = new Intl.NumberFormat('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                        maximumFractionDigits: 0
+                    }).format(price * 100000); // Convert lakhs to rupees
+                    
+                    resultDiv.innerHTML = `
+                        <h2>Estimated Value:</h2>
+                        <h2>${formattedPrice}</h2>
+                        <p class="adjustment-note">(Base price: ₹${Math.round(data.data.base_price * 100000).toLocaleString()})</p>`;
+                } else {
+                    resultDiv.innerHTML = '<h2>Estimation Failed</h2>';
+                    alert("Error: " + (data.message || "Unknown error occurred"));
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                resultDiv.innerHTML = '<h2>Estimation Failed</h2>';
+                alert("Failed to get price estimate: " + (error.message || "Please try again later."));
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+    console.log("Loading locations...");
+    fetch('/api/locations')
+        .then(response => {
+            if (!response.ok) {
+                console.error("Failed to fetch locations, status:", response.status);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Received locations data:", data);
+            if(data.status === 'success') {
+                const locationSelect = document.getElementById('uiLocations');
+                // Clear existing options except the first one
+                while (locationSelect.options.length > 1) {
+                    locationSelect.remove(1);
+                }
+                // Add new options
+                data.locations.forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    option.textContent = location;
+                    locationSelect.appendChild(option);
+                });
+                console.log(`Loaded ${data.locations.length} locations`);
+            } else {
+                console.error('Error loading locations:', data.message);
+                loadFallbackLocations();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching locations:', error);
+            loadFallbackLocations();
+        });
+});
+
+function loadFallbackLocations() {
+    console.log("Loading fallback locations");
+    const fallbackLocations = [
+        'Electronic City', 'Rajaji Nagar', 'Whitefield', 
+        'Indira Nagar', 'Koramangala', 'MG Road',
+        'Jayanagar', 'Marathahalli', 'HSR Layout', 'Bellandur'
+    ];
+    
+    const locationSelect = document.getElementById('uiLocations');
+    fallbackLocations.forEach(location => {
+        const option = document.createElement('option');
+        option.value = location;
+        option.textContent = location;
+        locationSelect.appendChild(option);
+    });
+}
+    </script>
+</body>
+</html>

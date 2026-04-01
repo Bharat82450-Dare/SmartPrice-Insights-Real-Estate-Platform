@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartPrice Insights | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        input {
+            font-family: "Poppins", sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            background-color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .forms-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .signin-signup {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 75%;
+            width: 50%;
+            transition: 1s 0.7s ease-in-out;
+            display: grid;
+            grid-template-columns: 1fr;
+            z-index: 5;
+        }
+
+        form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0rem 5rem;
+            transition: all 0.2s 0.7s;
+            overflow: hidden;
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+        }
+
+        form.sign-up-form {
+            opacity: 0;
+            z-index: 1;
+        }
+
+        form.sign-in-form {
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            color: #1a2b3c;
+            margin-bottom: 10px;
+        }
+
+        .input-field {
+            max-width: 380px;
+            width: 100%;
+            background-color: #f0f0f0;
+            margin: 10px 0;
+            height: 55px;
+            border-radius: 55px;
+            display: grid;
+            grid-template-columns: 15% 85%;
+            padding: 0 0.4rem;
+            position: relative;
+        }
+
+        .input-field i {
+            text-align: center;
+            line-height: 55px;
+            color: #acacac;
+            transition: 0.5s;
+            font-size: 1.1rem;
+        }
+
+        .input-field input {
+            background: none;
+            outline: none;
+            border: none;
+            line-height: 1;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .input-field input::placeholder {
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        .info-text {
+            padding: 0.7rem 0;
+            font-size: 1rem;
+            color: #666;
+            text-align: center;
+            max-width: 380px;
+        }
+
+        .btn {
+            width: 150px;
+            background-color: #FF5F38;
+            border: none;
+            outline: none;
+            height: 49px;
+            border-radius: 49px;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+
+        .btn:hover {
+            background-color: #e04b2a;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            background-color: #cccccc;
+        }
+
+        .panels-container {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .container:before {
+            content: "";
+            position: absolute;
+            height: 2000px;
+            width: 2000px;
+            top: -10%;
+            right: 48%;
+            transform: translateY(-50%);
+            background-image: linear-gradient(-45deg, #1a2b3c 0%, #2c3e50 100%);
+            transition: 1.8s ease-in-out;
+            border-radius: 50%;
+            z-index: 6;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-around;
+            text-align: center;
+            z-index: 6;
+        }
+
+        .left-panel {
+            pointer-events: all;
+            padding: 3rem 17% 2rem 12%;
+        }
+
+        .right-panel {
+            pointer-events: none;
+            padding: 3rem 12% 2rem 17%;
+        }
+
+        .panel .content {
+            color: #fff;
+            transition: transform 0.9s ease-in-out;
+            transition-delay: 0.6s;
+        }
+
+        .panel h3 {
+            font-weight: 600;
+            line-height: 1;
+            font-size: 1.5rem;
+        }
+
+        .panel p {
+            font-size: 0.95rem;
+            padding: 0.7rem 0;
+        }
+
+        .btn.transparent {
+            margin: 0;
+            background: none;
+            border: 2px solid #fff;
+            width: 130px;
+            height: 41px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .btn.transparent:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .right-panel .content {
+            transform: translateX(800px);
+        }
+
+        /* ANIMATION */
+        .container.sign-up-mode:before {
+            transform: translate(100%, -50%);
+            right: 52%;
+        }
+
+        .container.sign-up-mode .left-panel .content {
+            transform: translateX(-800px);
+        }
+
+        .container.sign-up-mode .signin-signup {
+            left: 25%;
+        }
+
+        .container.sign-up-mode form.sign-up-form {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        .container.sign-up-mode form.sign-in-form {
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .container.sign-up-mode .right-panel .content {
+            transform: translateX(0%);
+        }
+
+        .container.sign-up-mode .left-panel {
+            pointer-events: none;
+        }
+
+        .container.sign-up-mode .right-panel {
+            pointer-events: all;
+        }
+
+        @media (max-width: 870px) {
+            .container {
+                min-height: 800px;
+                height: 100vh;
+            }
+            .signin-signup {
+                width: 100%;
+                top: 95%;
+                transform: translate(-50%, -100%);
+                transition: 1s 0.8s ease-in-out;
+            }
+
+            .signin-signup,
+            .container.sign-up-mode .signin-signup {
+                left: 50%;
+            }
+
+            .panels-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 2fr 1fr;
+            }
+
+            .panel {
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding: 2.5rem 8%;
+                grid-column: 1 / 2;
+            }
+
+            .right-panel {
+                grid-row: 3 / 4;
+            }
+
+            .left-panel {
+                grid-row: 1 / 2;
+            }
+
+            .panel .content {
+                padding-right: 15%;
+                transition: transform 0.9s ease-in-out;
+                transition-delay: 0.8s;
+            }
+
+            .panel h3 {
+                font-size: 1.2rem;
+            }
+
+            .panel p {
+                font-size: 0.7rem;
+                padding: 0.5rem 0;
+            }
+
+            .btn.transparent {
+                width: 110px;
+                height: 35px;
+                font-size: 0.7rem;
+            }
+
+            .container:before {
+                width: 1500px;
+                height: 1500px;
+                transform: translateX(-50%);
+                left: 30%;
+                bottom: 68%;
+                right: initial;
+                top: initial;
+                transition: 2s ease-in-out;
+            }
+
+            .container.sign-up-mode:before {
+                transform: translate(-50%, 100%);
+                bottom: 32%;
+                right: initial;
+            }
+
+            .container.sign-up-mode .left-panel .content {
+                transform: translateY(-300px);
+            }
+
+            .container.sign-up-mode .right-panel .content {
+                transform: translateY(0px);
+            }
+
+            .right-panel .content {
+                transform: translateY(300px);
+            }
+
+            .container.sign-up-mode .signin-signup {
+                top: 5%;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @media (max-width: 570px) {
+            form {
+                padding: 0 1.5rem;
+            }
+
+            .panel .content {
+                padding: 0.5rem 1rem;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+
+            .container:before {
+                bottom: 72%;
+                left: 50%;
+            }
+
+            .container.sign-up-mode:before {
+                bottom: 28%;
+                left: 50%;
+            }
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: #ff3333;
+            font-size: 0.9rem;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            text-align: center;
+            max-width: 380px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="forms-container">
+            <div class="signin-signup">
+                <form class="sign-in-form" id="sign-in-form">
+                    <h2 class="title">Sign in</h2>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="username" placeholder="Username" id="signin-username" required />
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Password" id="signin-password" required />
+                    </div>
+                    <input type="hidden" name="csrf_token" id="signin-csrf">
+                    <div id="login-error" class="error-message"></div>
+                    <input type="submit" value="Login" class="btn solid" id="login-btn"/>
+                    <p class="info-text">Get accurate price predictions for properties in your area!</p>
+                </form>
+
+                <form class="sign-up-form" id="sign-up-form">
+                    <h2 class="title">Sign up</h2>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="username" placeholder="Username" id="signup-username" required minlength="3" />
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" placeholder="Email" id="signup-email" required />
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="password" placeholder="Password" id="signup-password" required minlength="6" />
+                    </div>
+                    <input type="hidden" name="csrf_token" id="signup-csrf">
+                    <div id="signup-error" class="error-message"></div>
+                    <input type="submit" class="btn" value="Sign up" id="signup-btn"/>
+                    <p class="info-text">Create an account to start predicting property prices!</p>
+                </form>
+            </div>
+        </div>
+
+        <div class="panels-container">
+            <div class="panel left-panel">
+                <div class="content">
+                    <h3>New here?</h3>
+                    <p>
+                        Use our AI-powered tool to predict house and apartment prices based on area, location, and size.
+                    </p>
+                    <button class="btn transparent" id="sign-up-btn-toggle">Sign up</button>
+                </div>
+            </div>
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>Already have an account?</h3>
+                    <p>
+                        Login to explore real-time pricing estimates for properties in your city.
+                    </p>
+                    <button class="btn transparent" id="sign-in-btn-toggle">Sign in</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between Sign in and Sign up modes
+        const sign_in_btn_toggle = document.querySelector("#sign-in-btn-toggle");
+        const sign_up_btn_toggle = document.querySelector("#sign-up-btn-toggle");
+        const container = document.querySelector("#container");
+
+        sign_up_btn_toggle.addEventListener("click", () => {
+            container.classList.add("sign-up-mode");
+            document.getElementById('signup-error').textContent = '';
+        });
+
+        sign_in_btn_toggle.addEventListener("click", () => {
+            container.classList.remove("sign-up-mode");
+            document.getElementById('login-error').textContent = '';
+        });
+
+        // Get CSRF token from cookies
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrf_token='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        // Set CSRF tokens in forms when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = getCSRFToken();
+            document.getElementById('signin-csrf').value = csrfToken;
+            document.getElementById('signup-csrf').value = csrfToken;
+        });
+
+        // Email validation regex
+        function isValidEmail(email) {
+            const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Handle Sign In form submission
+        document.getElementById('sign-in-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const csrfToken = getCSRFToken();
+            if (!csrfToken) {
+                document.getElementById('login-error').textContent = 'CSRF token missing. Please refresh the page.';
+                return;
+            }
+
+            const formData = {
+                username: document.getElementById('signin-username').value.trim(),
+                password: document.getElementById('signin-password').value.trim(),
+                csrf_token: csrfToken
+            };
+            
+            const errorElement = document.getElementById('login-error');
+            errorElement.textContent = '';
+            
+            // Client-side validation
+            if (!formData.username || !formData.password) {
+                errorElement.textContent = 'Please fill in all fields';
+                return;
+            }
+
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.disabled = true;
+            loginBtn.value = 'Logging in...';
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed with status ' + response.status);
+                }
+
+                if (data.success) {
+                    // Redirect to dashboard
+                    window.location.href = data.redirect || '/dashboard';
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorElement.textContent = error.message || 'Login failed. Please try again.';
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.value = 'Login';
+            }
+        });
+
+        // Handle Sign Up form submission
+        document.getElementById('sign-up-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const csrfToken = getCSRFToken();
+            if (!csrfToken) {
+                document.getElementById('signup-error').textContent = 'CSRF token missing. Please refresh the page.';
+                return;
+            }
+
+            const formData = {
+                username: document.getElementById('signup-username').value.trim(),
+                email: document.getElementById('signup-email').value.trim(),
+                password: document.getElementById('signup-password').value.trim(),
+                csrf_token: csrfToken
+            };
+            
+            const errorElement = document.getElementById('signup-error');
+            errorElement.textContent = '';
+            
+            // Client-side validation
+            if (!formData.username || !formData.email || !formData.password) {
+                errorElement.textContent = 'Please fill in all fields';
+                return;
+            }
+            
+            if (formData.username.length < 3) {
+                errorElement.textContent = 'Username must be at least 3 characters';
+                return;
+            }
+            
+            if (formData.password.length < 6) {
+                errorElement.textContent = 'Password must be at least 6 characters';
+                return;
+            }
+            
+            if (!isValidEmail(formData.email)) {
+                errorElement.textContent = 'Please enter a valid email address';
+                return;
+            }
+
+            const signupBtn = document.getElementById('signup-btn');
+            signupBtn.disabled = true;
+            signupBtn.value = 'Signing up...';
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed with status ' + response.status);
+                }
+
+                if (data.success) {
+                    // Switch to sign-in form and pre-fill credentials
+                    container.classList.remove("sign-up-mode");
+                    document.getElementById('signin-username').value = formData.username;
+                    document.getElementById('signin-password').value = formData.password;
+                    document.getElementById('login-error').textContent = data.message || 'Registration successful! Please sign in.';
+                } else {
+                    throw new Error(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                errorElement.textContent = error.message || 'Registration failed. Please try again.';
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.value = 'Sign up';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buy, Sell Property | SmartPrice Insights</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* =========== Global Styles & Variables (Inherited from provided theme) =========== */
+        :root {
+            --dark-blue-start: #1a2b3c;
+            --dark-blue-end: #2c3e50;
+            --orange-primary: #FF5F38;
+            --orange-hover: #e04b2a;
+            --white: #fff;
+            --light-gray-bg: #f8f9fa;
+            --text-dark: #1a2b3c;
+            --text-light: #fff;
+            --text-secondary: #6c757d;
+            --text-placeholder: #aaa;
+            --text-light-secondary: #e0e0e0;
+            --border-light: #eee;
+            --dark-border-light: rgba(255, 255, 255, 0.15);
+            --placeholder-bg: #e9ecef;
+            --dark-placeholder-bg: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(-45deg, var(--dark-blue-start) 0%, var(--dark-blue-end) 100%);
+            color: var(--text-light-secondary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--orange-primary);
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: var(--orange-hover);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            opacity: 0;
+            animation: fadeInContainer 0.8s 0.2s ease-out forwards;
+        }
+
+        @keyframes fadeInContainer {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.6rem; /* Slightly adjusted */
+            font-weight: 700;
+            margin-bottom: 30px; /* More space */
+            line-height: 1.3;
+        }
+        h1 span {
+            color: var(--orange-primary);
+        }
+
+        .intro {
+            text-align: center;
+            color: var(--text-light-secondary);
+            margin-bottom: 40px; /* Adjusted */
+            max-width: 750px; /* Slightly wider */
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.1rem;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--dark-border-light);
+            opacity: 0;
+            animation: slideUpFadeIn 0.6s ease-out forwards;
+        }
+        .features-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .features-section:nth-of-type(1) { animation-delay: 0.5s; }
+        .features-section:nth-of-type(2) { animation-delay: 0.7s; }
+
+        @keyframes slideUpFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .features-section h2 {
+            font-size: 2rem; /* Adjusted */
+            font-weight: 700;
+            margin-bottom: 30px; /* Adjusted */
+            border-bottom: 3px solid var(--orange-primary);
+            padding-bottom: 10px;
+            display: inline-block;
+            color: var(--text-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Slightly smaller min width */
+            gap: 30px; /* Adjusted gap */
+        }
+
+        .feature-card {
+            background-color: var(--light-gray-bg);
+            color: var(--text-dark);
+            padding: 25px 20px; /* Adjusted padding */
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease-in-out, border-color 0.3s ease-in-out;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: slideUpFadeIn 0.5s ease-out forwards;
+            animation-delay: inherit;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--orange-primary);
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem; /* Adjusted */
+            font-weight: 600;
+            margin-bottom: 15px; /* Adjusted */
+            color: var(--text-dark);
+            margin-top: 0;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem; /* Slightly larger */
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-weight: 400;
+            margin-top: auto;
+        }
+
+        /* Call to Action Section */
+        .cta-section {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: rgba(255, 255, 255, 0.05); /* Slightly transparent background */
+            border-radius: 10px;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: slideUpFadeIn 0.6s 0.8s ease-out forwards;
+            display: none; /* Removed the CTA Section */
+        }
+
+        .cta-section h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        .cta-section p {
+            color: var(--text-light-secondary);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--orange-primary);
+            color: var(--white);
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: var(--orange-hover);
+        }
+
+        /* Responsive Adjustments (Inherited and slightly modified) */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+                animation: none;
+                opacity: 1;
+            }
+            .features-section, .feature-card, .cta-section {
+                animation: none;
+                opacity: 1;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            h1 { font-size: 2.4rem; }
+            .features-section h2 { font-size: 1.8rem; }
+            .intro { font-size: 1rem; margin-bottom: 30px; }
+            .cta-section h2 { font-size: 2rem; }
+            .cta-section p { font-size: 1rem; }
+            .cta-button { padding: 12px 25px; font-size: 1rem; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 0 10px; }
+            h1 { font-size: 2rem; }
+            .features-section h2 { font-size: 1.6rem; }
+            .feature-card { padding: 20px 15px; }
+            .feature-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
+            .feature-card p { font-size: 0.9rem; }
+            .cta-section h2 { font-size: 1.8rem; }
+            .cta-button { padding: 10px 20px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <h1>Find Your Perfect Property in <span>Bangalore</span></h1>
+        <p class="intro">
+            Explore our platform to buy or sell properties in Bangalore. Get started and find the right real estate solution for your needs.
+        </p>
+
+        <section class="features-section">
+            <h2>What would you like to do?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Buy Property</h3>
+                    <p>Browse through a wide selection of properties available for purchase in various locations across Bangalore. Find your dream home or investment opportunity.</p>
+                    <a href="/predictor" class="cta-button" style="margin-top: 20px;">Explore Buying Options</a>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-home"></i>
+                    <h3>Sell Property</h3>
+                    <p>List your property for sale and reach a large audience of potential buyers in Bangalore. Get the best value for your real estate.</p>
+                    <a href="/sell" class="cta-button" style="margin-top: 20px;">List Your Property</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Looking for Price Predictions?</h2>
+            <p>Understand the potential value of properties in Bangalore with our advanced price prediction tools. Analyze trends and make informed decisions.</p>
+            <a href="#" class="cta-button">Explore Price Predictions</a>
+        </section>
+
+    </main>
+
+    <script>
+        console.log("Buy, Sell Property page script loaded.");
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.addEventListener('animationend', () => {
+                    console.log("Container fade-in animation complete.");
+                });
+            }
+        });
+    </script>
+</body>
+</html>

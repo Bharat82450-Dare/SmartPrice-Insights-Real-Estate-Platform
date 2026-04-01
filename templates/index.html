@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPrice Insights | Real Estate Price Predictions</title>
+    <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.css">
+    <style>
+        /* CSS for SmartPrice Insights */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background: #f8f9fa;
+            font-family: 'Raleway', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: insights;
+            src: url(./static/fonts/Rejouice-Headline.ttf);
+        }
+
+        video::-webkit-media-controls-fullscreen-button {
+            display: none !important;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: #fff;
+            color: #333;
+        }
+
+        /* Color Variables */
+        :root {
+            --primary-dark: #1a2b3c;
+            --primary-accent: #FF5F38;
+            --accent-hover: #e04b2a;
+            --light-bg: #f8f9fa;
+            --text-dark: #1a2b3c;
+            --text-light: #ffffff;
+        }
+
+        /* Loader Styles */
+        #loader {
+            height:100%;
+            width:100%;
+            position: fixed;
+            top: 0;
+            background: var(--primary-dark);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--primary-accent);
+        }
+        #loader h3 {
+            font-size: 3vw;
+        }
+
+        /* Page 1 - Hero Section */
+        #page1 {
+            height:100vh;
+            width:100%;
+            position: relative;
+        }
+        #cursor {
+            height:7.5vw;
+            width: 7.5vw;
+            background-color: var(--primary-dark);
+            border-radius: 50%;
+            position: fixed;
+            z-index: 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translate(-50%, -50%);
+        }
+        #cursor h5 {
+            font-size: 1.15vw;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        #page1 video {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            position: absolute;
+        }
+        #page1-content {
+            height: 100%;
+            position: relative;
+            width: 100%;
+            color: var(--text-light);
+            display: flex;
+            z-index: 10;
+            align-items: center;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        nav {
+            width: 100%;
+            display: flex;
+            text-align: center;
+            justify-content: space-between;
+            padding: 3vw;
+        }
+        nav h3 {
+            font-size: 1.4vw;
+            font-weight: 100;
+            color: var(--text-light);
+        }
+        nav h4 {
+            font-size: 1.4vw;
+            font-weight: 100;
+            color: var(--text-light);
+        }
+        #page1-content h1 {
+            font-family: insights;
+            font-size: 20vw;
+            line-height: 20vw;
+            font-weight: 100;
+            color: var(--text-light);
+            text-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        #page1-content span {
+            font-family: insights;
+            display: inline-block;
+        }
+
+        /* Page 2 - About Section */
+        #page2 {
+    min-height: 100vh;
+    width: 100%;
+    background: var(--light-bg);
+    padding: 3vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.features-heading {
+    text-align: center;
+    margin-bottom: 4vw;
+}
+
+.features-heading h2 {
+    font-size: 3.5vw;
+    color: var(--primary-dark);
+    font-weight: 600;
+    position: relative;
+    display: inline-block;
+}
+
+.features-heading h2::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 3px;
+    background: var(--primary-accent);
+    bottom: -10px;
+    left: 25%;
+}
+
+.features-container {
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.feature-card {
+    width: 28%;
+    padding: 2vw;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.feature-number {
+    font-size: 2vw;
+    font-weight: 700;
+    color: var(--primary-accent);
+    margin-bottom: 1vw;
+}
+
+.feature-content h3 {
+    font-size: 1.5vw;
+    color: var(--primary-dark);
+    margin-bottom: 1vw;
+    font-weight: 600;
+}
+
+.feature-content p {
+    font-size: 1vw;
+    color: var(--text-dark);
+    line-height: 1.6;
+    opacity: 0.8;
+}
+        #page2>#nav {
+            display: flex;
+            padding: 2.8vw;
+            padding-bottom: 1vw;
+            height: 21vh;
+            width: 100%;
+            align-items:end;
+            overflow: hidden;
+            justify-content: space-between;
+        }
+        hr{
+            width: 94.4vw;
+            margin: 0 auto;
+            justify-content: center;
+            border-color: rgba(26,43,60,0.1);
+        }
+        #page2>#nav>.elem h1 {
+            align-items: baseline;
+            font-size: 1.67vw;
+            font-weight: 100;
+            color: var(--text-dark);
+        }
+        #page2>.heading {
+            padding: 2.8vw;
+        }
+        #page2>.heading h1{
+            font-size: 4vw;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        #space {
+            margin-left: 8vw;
+        }
+
+        /* Page 3 - Services Section */
+        #page3 {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            padding: 3vw; /* Already set, ensure this is enough */
+            background: #fff;
+            box-sizing: border-box; /* Ensures padding is included in width */
+        }
+        #page3-top {
+            text-align: center;
+        }
+        #page3-top h4 {
+            margin-bottom: 1vw;
+            font-size: 1vw;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        #page3-top span {
+            font-size: 0.7vw;
+            background-color: var(--primary-accent);
+            color: var(--text-light);
+            padding: 2px 5px;
+            border-radius: 10px;
+        }
+        #page3-top h2 {
+            font-size: 4vw;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        #page3-elements {
+            height: 75vh;
+            display: flex;
+            justify-content: space-between; /* Distributes space evenly */
+            align-items: center;
+            width: 100%;
+            margin-top: 8vw;
+            gap: 2vw; /* Adds consistent spacing between boxes */
+            padding: 0 1vw; /* Extra side padding to prevent edge sticking */
+            box-sizing: border-box; /* Includes padding in width calculation */
+        }
+        #page3-elements .box {
+            height: 100%;
+            width: calc(30% - 1vw); /* Adjusts width to account for gap */
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        #page3-elements .box video {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        #page3-elements .box img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+            position: absolute;
+            transition: all linear 0.7s;
+        }
+        #page3-elements>.box:hover img{
+            opacity: 1;
+        }
+        .box-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2vw;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: var(--text-light);
+            z-index: 2;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .box-content h3 {
+            font-size: 1.8vw;
+            margin-bottom: 0.5vw;
+        }
+        .box-content p {
+            font-size: 1vw;
+            opacity: 0.8;
+        }
+        #page3-elements .box:hover .box-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Page 4 - CTA Section */
+        #page4 {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-dark);
+        }
+        #page4 a {
+            color: var(--text-light);
+            padding: 5vw;
+            font-size: larger;
+            font-weight: bolder;
+            text-decoration: none;
+            background: var(--primary-accent);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        #page4 a:hover {
+            background: var(--accent-hover);
+        }
+        #page4-top {
+            position: absolute;
+            z-index: 2;
+        }
+        #page4 video {
+            width: 50%;
+        }
+        #page4 svg {
+            position: absolute;
+            height:65%;
+        }
+
+        /* Page 5 - Portfolio Section */
+        #page5 {
+    height: 100vh;
+    width: 100%;
+    background: var(--light-bg);
+    position: relative;
+    padding-bottom: 120px; /* Space for the contact strip */
+}
+        #page5 h1 {
+            font-size: 4vw;
+            font-family: insights;
+            font-weight: 100;
+            border-bottom: 1px solid rgba(26,43,60,0.1);
+            width :96%;
+            margin-left: 2%;
+            margin-bottom: -3vw;
+            color: var(--text-dark);
+            padding-top: 5vw;
+        }
+        #page5 img {
+    height: 12%; /* Relative to strip height */
+    width: auto;
+    position: absolute;
+    right: 5vw;
+    bottom: 0;
+    transform: translateY(-15%); /* Lifts image slightly above strip */
+    border-radius: 15px 15px 0 0; /* Rounded top only */
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+#contact-strip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 180px;
+    background: var(--primary-dark); /* Using your dark color */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5vw;
+    box-sizing: border-box;
+    color: var(--text-light);
+}
+.contact-info {
+    font-size: 1.1vw;
+    line-height: 1.6;
+}
+
+.contact-info strong {
+    font-size: 1.3vw;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary-accent);
+}
+        #page5 #swiperdiv {
+            position: relative;
+            height: 100vh;
+        }
+        .swiper {
+            width: 100vw;
+            padding: 5vw;
+        }
+        .swiper-slide {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .swiper-slide img{
+            width:100%;
+            height: 60vh;
+            object-fit: cover;
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2vw;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: var(--text-light);
+        }
+        .slide-content h3 {
+            font-size: 2vw;
+            margin-bottom: 0.5vw;
+        }
+        .slide-content p {
+            font-size: 1.2vw;
+            opacity: 0.8;
+        }
+        .swiper-wrapper {
+            align-items:baseline;
+            position: absolute;
+            z-index: 10;
+        }
+
+        @media (max-width: 1024px) {
+    .features-heading h2 {
+        font-size: 4vw;
+    }
+    
+    .feature-card {
+        width: 30%;
+        padding: 3vw;
+    }
+}
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .features-heading h2 {
+        font-size: 6vw;
+        margin-bottom: 6vw;
+    }
+    
+    .features-container {
+        flex-direction: column;
+        gap: 4vw;
+    }
+    
+    .feature-card {
+        width: 100%;
+        padding: 6vw;
+    }
+    
+    .feature-number {
+        font-size: 6vw;
+    }
+    
+    .feature-content h3 {
+        font-size: 4.5vw;
+    }
+    
+    .feature-content p {
+        font-size: 3.5vw;
+    }
+            #loader h3 {
+                font-size: 5vw;
+            }
+            #page1-content h1 {
+                font-size: 15vw;
+                line-height: 15vw;
+            }
+            nav h3, nav h4 {
+                font-size: 3vw;
+            }
+            #cursor {
+                height: 12vw;
+                width: 12vw;
+            }
+            #cursor h5 {
+                font-size: 2vw;
+            }
+            #page2>#nav>.elem h1 {
+                font-size: 3vw;
+            }
+            #page2>.heading h1 {
+                font-size: 5vw;
+            }
+            #page3-top h4 {
+                font-size: 2vw;
+            }
+            #page3-top h2 {
+                font-size: 6vw;
+            }
+            #page3-elements {
+                flex-direction: column;
+                height: auto;
+            }
+            #page3-elements .box {
+                width: 90%;
+                height: 40vh;
+                margin-bottom: 3vw;
+            }
+            .box-content h3 {
+                font-size: 3vw;
+            }
+            .box-content p {
+                font-size: 2vw;
+            }
+            #page5 h1 {
+                font-size: 15vw;
+            }
+            #page5 img {
+        height: 20%;
+        right: 5%;
+        bottom: 10%;
+    }
+            .swiper {
+                padding: 2vw;
+            }
+            .swiper-slide img {
+                height: 40vh;
+            }
+            .slide-content h3 {
+                font-size: 4vw;
+            }
+            .slide-content p {
+                font-size: 2.5vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loader">
+        <h3>Predicting</h3>
+        <h3>Real Estate</h3>
+        <h3>Prices</h3>
+    </div>
+    <div id="main">
+        <div id="page1">
+            
+            <video muted autoplay playsinline loop poster="assets/img/hero-background.jpg">
+                <source src="static/videos/Untitled video - Made with Clipchamp.mp4" type="video/mp4">
+                <!-- Fallback image if video doesn't load -->
+                <img src="assets/img/hero-background.jpg" alt="Real Estate Data Visualization">
+            </video>
+            <div id="page1-content">
+
+                <div class="title-container">  <!-- NEW: Wrap h1 in this div -->
+                    <h1><span>S</span><span>m</span><span>a</span><span>r</span><span>t</span><span>P</span><span>r</span><span>i</span><span>c</span><span>e</span></h1>
+                </div>
+            </div>
+        </div>
+        <div id="page2">
+            <hr>
+            <div class="features-heading">
+                <h2>Why use SmartPrice</h2>
+            </div>
+            <div class="features-container">
+                <div class="feature-card">
+                    <div class="feature-number">01</div>
+                    <div class="feature-content">
+                        <h3>Area Market Analysis</h3>
+                        <p>We provide up-to-date insights and trends for your local neighborhood and beyond.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number">02</div>
+                    <div class="feature-content">
+                        <h3>Property Listing Support</h3>
+                        <p>List, buy, or sell properties with ease—fully guided, from start to finish.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-number">03</div>
+                    <div class="feature-content">
+                        <h3>Personalized User Experience</h3>
+                        <p>Tailored results based on your preferences and search behavior.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="page3">
+            <div id="page3-top">
+                <h2>Uncover the Benefits of </h2>
+                <h2>Our Platform</h2>
+            </div>
+            <div id="page3-elements">
+                <div class="box">
+                    <!-- Main image (fades out on hover) -->
+                    <img src="static/videos/ChatGPT Image Apr 13, 2025, 05_16_09 PM.png" alt="Residential Predictions">
+                    
+                    <!-- Your new image (appears on hover) -->
+                    <img src="static/videos/ChatGPT Image Apr 13, 2025, 05_16_09 PM.png" 
+                         alt="Residential Market Analysis" 
+                         class="hover-image">
+                    
+                    <div class="box-content">
+                        <h3>Residential Market Insights</h3>
+                        <p>Precise Residential Price Forecasts You Can Trust</p>
+                    </div>
+                </div>
+                <div class="box">
+                    <!-- Main image (fades out on hover) -->
+                    <img src="static/videos/ChatGPT Image Apr 14, 2025, 03_05_06 PM.png" alt="Residential Predictions">
+                    
+                    <!-- Your new image (appears on hover) -->
+                    <img src="static/videos/ChatGPT Image Apr 14, 2025, 03_05_06 PM.png" 
+                         alt="Residential Market Analysis" 
+                         class="hover-image">
+                    
+                    <div class="box-content">
+                        <h3>Community Market Analysis</h3>
+                        <p>Discover Key Market Trends in Your Area</p>
+                    </div>
+                </div>
+                <div class="box">
+                    <!-- Main image (fades out on hover) -->
+                    <img src="static/videos/image.png" alt="Residential Predictions">
+                    
+                    <!-- Your new image (appears on hover) -->
+                    <img src="static/videos/image.png" 
+                         alt="Residential Market Analysis" 
+                         class="hover-image">
+                    
+                    <div class="box-content">
+                        <h3>Your Property Marketplace </h3>
+                        <p>List, Buy, or Sell Properties with Ease</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="page4">
+            <div id="page4-top">
+                <a href="/login">Get Started Today</a>
+            </div>
+            <video muted autoplay playsinline loop poster="#000">
+                <source src="assets/videos/data-visualization.webm" type="video/mp4">
+            </video>
+            <svg class="abs tl:0 fit transform rotate:130 (.in-view):rotate:237deg (.in-view):tween:all,2.8s,easeOutSlow " viewBox="0 0 100 100">
+                <circle cx="50" cy="1" r="1" fill="#fff"></circle>
+            </svg>
+            <svg class="abs tl:0 fit transform rotate:90deg rotate" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="49" stroke="#fff" stroke-width="0.25" fill="none" class="o:0.3 dasharray:302 dashoffset:604 (.in-view):dashoffset:400 (.in-view):tween:all,2.8s,easeOutSlow "></circle>
+                <circle cx="50" cy="50" r="49" stroke="#fff" stroke-width="0.15" fill="none" class="dasharray:302 dashoffset:302 (.in-view):dashoffset:100 (.in-view):tween:all,2.8s,easeOutSlow "></circle>
+            </svg>
+        </div>
+
+        <div id="page5">
+            <h1>With a strong focus on quality, our team is deeply involved in delivering tailored solutions for you.</h1>
+            <h1>Behind the platform: Sujal Meshram, Bharat Sarkar, and Vaishnavi Nehare.</h1>
+            <img src="static/videos/Screenshot 2025-04-14 160523-Photoroom.jpg" 
+                         alt="Residential Market Analysis">
+                         <div id="contact-strip">
+                            <div class="contact-info">
+                                <strong>Contact Info</strong>
+                                <div class="contact-item">📧 <a href="mailto:202301040075@mitaoe.ac.in">202301040075@mitaoe.ac.in</a></div>
+                                <div class="contact-item">📞 <a href="https://api.whatsapp.com/send?phone=917276337332">+91-7276337332</a>, <a href="https://api.whatsapp.com/send?phone=917498491953">+91-7498491953</a></div>
+                                <div class="contact-item">📍 <a href="https://maps.app.goo.gl/KcXEhUCwHbN98KDW6">MIT Academy of Engineering, Alandi road,<br>Pune - 412 105, Maharashtra (India)</a></div>
+                            </div>
+                        </div>
+            </div>
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/gsap.min.js" integrity="sha512-7Au1ULjlT8PP1Ygs6mDZh9NuQD0A5prSrAUiPHMXpU6g3UMd8qesVnhug5X4RoDr35x5upNpx0A6Sisz1LSTXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/ScrollTrigger.min.js" integrity="sha512-LQQDtPAueBcmGXKdOBcMkrhrtqM7xR2bVrnMtYZ8ImAZhFlIb5xrMqQ6uZviyeSB+4mYj89ta8niiCIQM1Gj0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <script>
+        // JavaScript for SmartPrice Insights
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize loader animation
+            var tl = gsap.timeline();
+            tl.from("#loader h3", {
+                x: 40,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2
+            });
+            tl.to("#loader h3", {
+                x: -40,
+                opacity: 0,
+                duration: 1,
+                stagger: -0.2
+            });
+            tl.to("#loader", {
+                opacity: 0,
+                display: "none",
+            });
+            tl.from("#page1-content span", {
+                y: 100,
+                opacity: 0,
+                stagger: 0.1
+            });
+
+            // Auto-play video
+            document.querySelector("body").addEventListener("click", () => {
+                document.querySelector("video").play();
+            });
+
+            // Initialize Swiper
+            var swiper = new Swiper(".mySwiper", {
+                slidesPerView: 3,
+                spaceBetween: 30,
+                loop: true,
+                autoplay: {
+                    delay: 2500,
+                    disableOnInteraction: false,
+                },
+                breakpoints: {
+                    320: {
+                        slidesPerView: 1,
+                        spaceBetween: 20
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 30
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 30
+                    }
+                }
+            });
+
+            // Initialize Locomotive Scroll
+            gsap.registerPlugin(ScrollTrigger);
+            const locoScroll = new LocomotiveScroll({
+                el: document.querySelector("#main"),
+                smooth: true,
+                smartphone: {
+                    smooth: true
+                },
+                tablet: {
+                    smooth: true
+                }
+            });
+            locoScroll.on("scroll", ScrollTrigger.update);
+            ScrollTrigger.scrollerProxy("#main", {
+                scrollTop(value) {
+                    return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
+                },
+                getBoundingClientRect() {
+                    return {top: 0, left: 0, width: window.innerWidth, height: window.innerHeight};
+                },
+                pinType: document.querySelector("#main").style.transform ? "transform" : "fixed"
+            });
+            ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+            ScrollTrigger.refresh();
+
+            // Custom cursor effect
+            var page1Content = document.querySelector("#page1-content");
+            var cursor = document.querySelector("#cursor");
+            
+            if (window.innerWidth > 768) {
+                page1Content.addEventListener("mousemove", function(dets) {
+                    gsap.to(cursor, {
+                        x: dets.x,
+                        y: dets.y
+                    });
+                });
+                
+                page1Content.addEventListener("mouseenter", function() {
+                    gsap.to(cursor, {
+                        scale: 1,
+                        opacity: 1,
+                    });
+                });
+                
+                page1Content.addEventListener("mouseleave", function() {
+                    gsap.to(cursor, {
+                        scale: 0,
+                        opacity: 0
+                    });
+                });
+            } else {
+                cursor.style.display = "none";
+            }
+
+            // Page 2 animation
+            gsap.from(".elem h1", {
+                y: 100,
+                stagger: 0.2,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: "#page2",
+                    scroller: "#main",
+                    start: "top 47%",
+                    end: "top 45%",
+                    scrub: 1
+                }
+            });
+
+            // Box hover effects
+            document.querySelectorAll('#page3-elements .box').forEach(box => {
+                box.addEventListener('mouseenter', () => {
+                    gsap.to(box.querySelector('.box-content'), {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.3
+                    });
+                });
+                
+                box.addEventListener('mouseleave', () => {
+                    gsap.to(box.querySelector('.box-content'), {
+                        y: 50,
+                        opacity: 0,
+                        duration: 0.3
+                    });
+                });
+            });
+
+            // Responsive adjustments
+            function handleResize() {
+                if (window.innerWidth <= 768) {
+                    // Mobile-specific adjustments
+                    document.querySelectorAll('.box-content').forEach(content => {
+                        content.style.transform = 'translateY(0)';
+                        content.style.opacity = '1';
+                    });
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+        });
+    </script>
+</body>
+</html>

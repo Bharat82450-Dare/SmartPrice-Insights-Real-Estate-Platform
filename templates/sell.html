@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Property | Bangalore Real Estate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .checkbox-group label {
+            display: inline-block;
+            margin-right: 10px;
+            font-weight: normal;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #imageUpload {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        #imageUpload:hover {
+            background-color: #0056b3;
+        }
+        #image {
+            display: none;
+        }
+        #imagePreview {
+            width: 100px;
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            object-fit: cover;
+            display: none;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #successMessage {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+        #errorMessage {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+        .loading-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-button i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>List Your Property for Sale</h2>
+        <form id="propertyForm">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="society" name="society">
+            </div>
+            <div class="form-group">
+                <label for="area_type">Area Type</label>
+                <select id="area_type" name="area_type" required>
+                    <option value="">Select Area Type</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="availability">Availability</label>
+                <input type="text" id="availability" name="availability" placeholder="e.g., Ready to Move, Under Construction" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <select id="location" name="location" required>
+                    <option value="">Select Location</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="size">Size (BHK)</label>
+                <input type="number" id="size" name="size" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="total_sqft">Total Sqft</label>
+                <input type="number" id="total_sqft" name="total_sqft" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="bath">Bathrooms</label>
+                <input type="number" id="bath" name="bath" min="0">
+            </div>
+            <div class="form-group">
+                <label for="balcony">Balconies</label>
+                <input type="number" id="balcony" name="balcony" min="0">
+            </div>
+            <div class="form-group">
+                <label for="price">Price (in INR)</label>
+                <input type="number" id="price" name="price" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact Number</label>
+                <input type="text" id="contact" name="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="amenities">Amenities (Optional)</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="amenities" value="gym"> Gym</label>
+                    <label><input type="checkbox" name="amenities" value="pool"> Swimming Pool</label>
+                    <label><input type="checkbox" name="amenities" value="garden"> Garden</label>
+                    <label><input type="checkbox" name="amenities" value="parking"> Parking</label>
+                    </div>
+            </div>
+            <div class="form-group">
+                <label for="image">Property Image (Optional)</label>
+                <button type="button" id="imageUpload"><i class="fas fa-upload"></i> Upload Image</button>
+                <input type="file" id="image" name="image" accept="image/*">
+                <img id="imagePreview" src="#" alt="Image Preview">
+            </div>
+            <button type="submit" id="submitBtn"><i class="fas fa-paper-plane"></i> List Property</button>
+        </form>
+
+        <div id="successMessage" class="message" style="display:none;">
+            Property listed successfully!
+        </div>
+        <div id="errorMessage" class="message" style="display:none;">
+            <span id="errorText"></span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to get CSRF token from cookie
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            const csrfToken = getCookie('csrf_token');
+
+            // Load locations
+            fetch('/api/locations')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('location');
+                    data.locations.forEach(location => {
+                        const option = document.createElement('option');
+                        option.value = location;
+                        option.textContent = location;
+                        select.appendChild(option);
+                    });
+                });
+
+            // Load area types
+            fetch('/api/area_types')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('area_type');
+                    data.area_types.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type;
+                        option.textContent = type;
+                        select.appendChild(option);
+                    });
+                });
+
+            // Image upload handling
+            const imageUpload = document.getElementById('imageUpload');
+            const imageInput = document.getElementById('image');
+            const imagePreview = document.getElementById('imagePreview');
+
+            imageUpload.addEventListener('click', () => imageInput.click());
+
+            imageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    imagePreview.style.display = 'none';
+                    imagePreview.src = '#';
+                }
+            });
+
+            // Form submission
+            const form = document.getElementById('propertyForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                const formData = new FormData(form);
+                const amenities = Array.from(document.querySelectorAll('input[name="amenities"]:checked'))
+                    .map(el => el.value).join(',');
+                formData.append('amenities', amenities);
+
+                fetch('/api/submit_property', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('errorMessage').style.display = 'none';
+                        form.reset();
+                        imagePreview.style.display = 'none';
+                        imagePreview.src = '#';
+                    } else {
+                        document.getElementById('errorText').textContent = data.message || 'Submission failed';
+                        document.getElementById('errorMessage').style.display = 'block';
+                        document.getElementById('successMessage').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('errorText').textContent = 'Network error: ' + error.message;
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'none';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> List Property';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
