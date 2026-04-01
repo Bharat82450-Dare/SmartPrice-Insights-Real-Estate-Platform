@@ -41,39 +41,40 @@ def add_property(property_data: Dict) -> None:
         raise ValueError(f"Missing required fields: {missing_fields}")
     
     try:
-        # Clean the new property data using the same pipeline
+        # Clean the new property data
         cleaned_data = {
-            'area_type': str(property_data['area_type']).strip(),
-            'availability': str(property_data['availability']).strip(),
-            'location': str(property_data['location']).strip().lower(),
-            'size': str(property_data['size']),
+            'area_type': str(property_data.get('area_type', '')).strip(),
+            'availability': str(property_data.get('availability', 'Ready To Move')).strip(),
+            'location': str(property_data.get('location', '')).strip().lower(),
+            'size': str(property_data.get('size', '')),
             'society': str(property_data.get('society', '')).strip(),
-            'total_sqft': __clean_sqft(property_data['total_sqft']),
-            'bath': int(property_data['bath']),
+            'total_sqft': __clean_sqft(property_data.get('total_sqft', 0)),
+            'bath': int(property_data.get('bath', 1)),
             'balcony': int(property_data.get('balcony', 0)),
-            'price': float(property_data['price']),
-            'bhk': __extract_bhk(property_data['size'])
+            'price': float(property_data.get('price', 0)),
+            'username': str(property_data.get('username', 'anonymous')),
+            'timestamp': str(property_data.get('timestamp', '')),
+            'title': str(property_data.get('title', '')),
+            'description': str(property_data.get('description', '')),
+            'contact': str(property_data.get('contact', '')),
+            'image_path': str(property_data.get('image_path', ''))
         }
         
-        # Additional fields from your submission form
-        optional_fields = ['title', 'description', 'contact', 'image_path']
-        for field in optional_fields:
-            if field in property_data:
-                cleaned_data[field] = str(property_data[field])
+        # Add 'bhk' for in-memory DataFrame
+        in_memory_data = cleaned_data.copy()
+        in_memory_data['bhk'] = __extract_bhk(cleaned_data['size'])
         
-        # Validate cleaned data
-        if None in cleaned_data.values():
-            raise ValueError("Data cleaning failed - invalid values detected")
-            
         # Thread-safe DataFrame update
         with __data_lock:
             # Add to in-memory DataFrame
-            new_row = pd.DataFrame([cleaned_data])
+            new_row = pd.DataFrame([in_memory_data])
             global __df
             __df = pd.concat([__df, new_row], ignore_index=True)
             
             # Append to CSV (persistent storage)
-            new_row.to_csv(
+            # Ensure columns match CSV order
+            csv_cols = ['area_type', 'availability', 'location', 'size', 'society', 'total_sqft', 'bath', 'balcony', 'price', 'username', 'timestamp', 'title', 'description', 'contact', 'image_path']
+            pd.DataFrame([cleaned_data])[csv_cols].to_csv(
                 "server/bengaluru_house_prices.csv",
                 mode='a',
                 header=False,

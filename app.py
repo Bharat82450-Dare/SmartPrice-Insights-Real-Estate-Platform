@@ -368,7 +368,13 @@ def submit_property():
             'total_sqft': float(data.get('total_sqft', 0)),
             'bath': int(data.get('bath', 1)),
             'balcony': int(data.get('balcony', 0)),
-            'price': float(data.get('price'))
+            'price': float(data.get('price')),
+            'username': session.get('username', 'anonymous'),
+            'timestamp': datetime.now().isoformat(),
+            'title': data.get('title', ''),
+            'description': data.get('description', ''),
+            'contact': data.get('contact', ''),
+            'image_path': image_path
         }
 
         # Add to dataset
@@ -378,12 +384,6 @@ def submit_property():
             'status': 'success',
             'message': 'Property added successfully!'
         })
-
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 400 
 
     except Exception as e:
         return jsonify({
