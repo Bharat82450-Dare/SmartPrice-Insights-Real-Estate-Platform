@@ -61,7 +61,7 @@ This project combines modern web technologies with an advanced Machine Learning 
 
 
 ## Author
-Bharat Sarkar
+Bharat 
 
 ## 📸 Screenshots
 
